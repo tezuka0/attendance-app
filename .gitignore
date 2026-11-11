@@ -24,3 +24,5 @@ yarn-error.log
 /エンティティ定義.md
 /基本設計書.md
 /基本設計書_貼り付け用/
+
+.DS_Store

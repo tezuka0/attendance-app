@@ -7,6 +7,8 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Requests\LoginRequest;
+use App\Http\Responses\LoginResponse;
+use App\Http\Responses\LogoutResponse;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -18,6 +20,8 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -28,6 +32,9 @@ class FortifyServiceProvider extends ServiceProvider
     {
         //
         $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
+
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        $this->app->singleton(LogoutResponseContract::class, LogoutResponse::class);
     }
 
     /**

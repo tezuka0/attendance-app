@@ -47,6 +47,25 @@ class AttendanceRecord extends Model
 
     }
 
+    public function getTotalBreakTimeAttribute(): string
+    {
+        return $this->formatMinutes($this->totalBreakMinutes());
+    }
+
+    public function getTotalTimeAttribute(): ?string
+    {
+        return $this->formatMinutes($this->totalWorkMinutes());
+    }
+
+    private function formatMinutes(?int $minutes): ?string
+    {
+        if ($minutes === null) {
+            return null;
+        }
+
+        return sprintf('%d:%02d', intdiv($minutes, 60), $minutes % 60);
+    }
+
     //勤務時間の合計（分）
     public function totalWorkMinutes(): ?int
     {

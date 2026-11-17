@@ -82,17 +82,24 @@ class AttendanceController extends Controller
                 'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
                 'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
                 'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => $record ? $this->formatMinutes($record->totalBreakMinutes()) : null,
-                'total_time' => $record ? $this->formatMinutes($record->totalWorkMinutes()) : null,
+                'total_break_time' => $record ? $record->total_break_time : null,
+                'total_time' => $record ? $record->total_time : null,
             ];
         }
 
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
 
-    private function formatMinutes(?int $minutes): ?string
+    //「詳細」リンクから勤怠詳細へ移動する
+    public function redirectToDetail($id)
     {
-        return $minutes === null ? null : sprintf('%d:%02d', intdiv($minutes, 60), $minutes % 60);
+        $user = Auth::user();
+
+        if ($user->admin_status) {
+            return redirect("/admin/attendance/{$id}");
+        }
+
+        return redirect("/attendance/detail/{$id}");
     }
 
     //勤怠詳細を表示する

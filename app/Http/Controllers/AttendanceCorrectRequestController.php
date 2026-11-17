@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceCorrectRequestRequest;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Models\AttendanceCorrectRequest;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -26,6 +27,10 @@ class AttendanceCorrectRequestController extends Controller
     public function store(AttendanceCorrectRequestRequest $request, $id)
     {
         $user = Auth::user();
+
+        if ($user->admin_status) {
+            return app(AdminAttendanceController::class)->update($request, $id);
+        }
 
         if (ctype_digit($id)) {
             $record = $user->attendanceRecords()->findOrFail($id);

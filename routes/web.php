@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectRequestController;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'list']);
     Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])->where('id','[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::post('/attendance/detail/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id','[0-9]+|\d{4}-\d{2}-\d{2}');
-    Route::get('/attendance/{id}', fn ($id) => redirect("/attendance/detail/{$id}"))->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
+    Route::get('/attendance/{id}', [AttendanceController::class, 'redirectToDetail'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::post('/attendance/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::get('/application/{id}', [AttendanceCorrectRequestController::class, 'redirectToDetail'])->where('id', '[0-9]+');
     Route::get('/stamp_correction_request/list', [AttendanceCorrectRequestController::class, 'index']);
@@ -47,6 +48,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
     //管理者の画面
-    Route::view('/admin/attendance/list', 'admin.temp');
+    Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index']);
+    Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
 });
 

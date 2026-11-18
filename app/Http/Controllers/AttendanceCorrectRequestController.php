@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
 use App\Models\AttendanceCorrectRequest;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -63,7 +64,7 @@ class AttendanceCorrectRequestController extends Controller
             }
 
             $breakOut = $request->input("new_break_out.{$index}");
-            $application->attendanceCorrectRequestBreaks()->create([
+            $application->proposalBreaks()->create([
                 'break_start' => $breakIn,
                 'break_end' => $breakOut,
             ]);
@@ -76,6 +77,10 @@ class AttendanceCorrectRequestController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        if ($user->admin_status) {
+            return app(AdminAttendanceCorrectRequestController::class)->index();
+        }
 
         $formattedApplications = $user->attendanceCorrectRequests()
             ->latest()

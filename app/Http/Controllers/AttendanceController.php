@@ -63,40 +63,30 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        $date = Carbon::parse($request->query('date',now() ))->startOfMonth();
+        $date = Carbon::parse($request->query('date',now()))->startOfMonth();
 
         $previousMonth = $date->copy()->subMonth()->format('Y-m');
         $nextMonth = $date->copy()->addMonth()->format('Y-m');
 
-        $records = $user->attendanceRecords()
-            ->with('breakTimes')
-            ->whereBetween('date', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])
-            ->get()
-            ->keyBy(fn($record) => $record->date->format('Y-m-d'));
-        $formattedAttendanceRecords = [];
-        for ($day = $date->copy(); $day->lte($date->copy()->endOfMonth()); $day->addDay()) {
-            $record = $records[$day->format('Y-m-d')] ?? null;
-
-            $formattedAttendanceRecords[] = [
-                'id' => $record ? $record->id : $day->format('Y-m-d'),
-                'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
-                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
-                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => $record ? $record->total_break_time : null,
-                'total_time' => $record ? $record->total_time : null,
-            ];
-        }
+        $formattedAttendanceRecords = $user->monthlyAttendanceRecords($date);
 
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
 
     //「詳細」リンクから勤怠詳細へ移動する
-    public function redirectToDetail($id)
+    public function redirectToDetail(Request $request, $id)
     {
         $user = Auth::user();
 
         if ($user->admin_status) {
-            return redirect("/admin/attendance/{$id}");
+            $url = "/admin/attendance/{$id}";
+
+            $userId = $request->query('user_id');
+            if ($userId) {
+                $url .= '?user_id=' . $userId;
+            }
+
+            return redirect($url);
         }
 
         return redirect("/attendance/detail/{$id}");
@@ -116,13 +106,13 @@ class AttendanceController extends Controller
         }
 
         $application = $user->attendanceCorrectRequests()
-            ->with('attendanceCorrectRequestBreaks')
+            ->with('proposalBreaks')
             ->whereDate('date', $date)
             ->where('status', AttendanceCorrectRequest::STATUS_PENDING)
             ->first();
 
         $source = $application ?? $record;
-        $breaks = $application ? $application->attendanceCorrectRequestBreaks : ($record ? $record->breakTimes : collect());
+        $breaks = $application ? $application->proposalBreaks : ($record ? $record->breakTimes : collect());
 
         $data = [
             'id' => $record ? $record->id : $date->format('Y-m-d'),

@@ -19,4 +19,14 @@ class AttendanceCorrectRequestBreak extends Model
     {
         return $this->belongsTo(AttendanceCorrectRequest::class);
     }
+
+    public function getBreakInAttribute()
+    {
+        return $this->break_start;
+    }
+
+    public function getBreakOutAttribute()
+    {
+        return $this->break_end;
+    }
 }

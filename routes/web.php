@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectRequestController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 
 /*
@@ -50,5 +52,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     //管理者の画面
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index']);
     Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
+    Route::get('/admin/staff/list', [StaffController::class, 'index']);
+    Route::get('/admin/attendance/staff/{id}', [StaffController::class, 'show'])->where('id', '[0-9]+');
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceCorrectRequestController::class, 'show'])->where('attendance_correct_request_id', '[0-9]+');
+    Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceCorrectRequestController::class, 'approve'])->where('attendance_correct_request_id', '[0-9]+');
 });
 

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -86,4 +87,29 @@ class User extends Authenticatable
         return '出勤中';
     }
 
+    //指定した月の勤怠一覧（1日ずつの配列）
+    public function monthlyAttendanceRecords(Carbon $month): array
+    {
+        $records = $this->attendanceRecords()
+            ->with('breakTimes')
+            ->whereBetween('date', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
+            ->get()
+            ->keyBy(fn($record) => $record->date->format('Y-m-d'));
+
+        $formattedAttendanceRecords = [];
+        for ($day = $month->copy(); $day->lte($month->copy()->endOfMonth()); $day->addDay()) {
+            $record = $records[$day->format('Y-m-d')] ?? null;
+
+            $formattedAttendanceRecords[] = [
+                'id' => $record ? $record->id : $day->format('Y-m-d'),
+                'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
+                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                'total_break_time' => $record ? $record->total_break_time : null,
+                'total_time' => $record ? $record->total_time : null,
+            ];
+        }
+
+        return $formattedAttendanceRecords;
+    }
 }

@@ -11,6 +11,7 @@ class ClockInTest extends TestCase
 {
     use RefreshDatabase;
 
+    //出勤ボタンが正しく機能する
     public function test_clock_in_button_works(): void
     {
         $this->travelTo(now()->setTime(9, 0));
@@ -28,6 +29,7 @@ class ClockInTest extends TestCase
         $afterResponse->assertSee('出勤中');
     }
 
+    //出勤は一日一回のみできる
     public function test_user_can_clock_in_only_once_a_day(): void
     {
         $this->travelTo(now()->setTime(19, 0));
@@ -44,6 +46,7 @@ class ClockInTest extends TestCase
         $response->assertDontSee('value="clock_in"', false);
     }
 
+    //出勤時刻が勤怠一覧画面で確認できる
     public function test_clock_in_time_is_shown_on_attendance_list(): void
     {
         $this->travelTo(now()->setTime(9, 0));

@@ -11,6 +11,7 @@ class AdminLoginTest extends TestCase
 {
     use RefreshDatabase;
 
+    //メールアドレスが未入力の場合、バリデーションメッセージが表示される
     public function test_admin_email_is_required(): void
     {
         User::factory()->admin()->create([
@@ -26,6 +27,7 @@ class AdminLoginTest extends TestCase
         $response->assertSessionHasErrors(['email' => 'メールアドレスを入力してください']);
     }
 
+    //パスワードが未入力の場合、バリデーションメッセージが表示される
     public function test_admin_password_is_required(): void
     {
         User::factory()->admin()->create([
@@ -41,6 +43,7 @@ class AdminLoginTest extends TestCase
         $response->assertSessionHasErrors(['password' => 'パスワードを入力してください']);
     }
 
+    //登録内容と一致しない場合、バリデーションメッセージが表示される
     public function test_admin_fails_with_wrong_credentials(): void
     {
         User::factory()->admin()->create([

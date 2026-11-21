@@ -10,6 +10,7 @@ class DateTimeTest extends TestCase
 {
     use RefreshDatabase;
 
+    //現在の日時情報がUIと同じ形式で出力されている
     public function test_attendance_page_displays_current_datetime(): void
     {
         $this->travelTo(now()->setTime(9, 0));

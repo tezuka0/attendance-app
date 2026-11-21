@@ -50,7 +50,7 @@ class ClockInTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user)->post('/attendance', ['action' =>'clock_in']);
+        $this->actingAs($user)->post('/attendance', ['action' => 'clock_in']);
         $response = $this->get('/attendance/list');
         $response->assertStatus(200);
         $response->assertSee('09:00');

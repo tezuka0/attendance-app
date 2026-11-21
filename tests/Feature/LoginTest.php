@@ -13,7 +13,7 @@ class LoginTest extends TestCase
 
     public function test_email_is_required(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
@@ -28,7 +28,7 @@ class LoginTest extends TestCase
 
     public function test_password_is_required(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
@@ -43,14 +43,14 @@ class LoginTest extends TestCase
 
     public function test_login_fails_wrong_credentials(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
 
         $response = $this->post('/login', [
             'email' => 'wrong@example.com',
-            'password' => 'password123'
+            'password' => 'password123',
         ]);
 
         $response->assertSessionHasErrors(['email' => 'ログイン情報が登録されていません']);

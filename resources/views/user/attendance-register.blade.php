@@ -20,14 +20,14 @@
             <input class="current-time__item" type="text" id="currentTime" value="{{ $formattedTime }}" readonly>
         </div>
         <div class="attendance__button">
-            @if($user->attendance_status === '勤務外')
+            @if($user->attendance_status === \App\Models\User::STATUS_OFF_DUTY)
                 <button class="attendance__button--submit--clock-in" type="submit" name="action" value="clock_in">出勤</button>
-            @elseif($user->attendance_status === '出勤中')
+            @elseif($user->attendance_status === \App\Models\User::STATUS_WORKING)
                 <button class="attendance__button--submit--clock-out" type="submit" name="action" value="clock_out">退勤</button>
                 <button class="attendance__button--submit--break-in" type="submit" name="action" value="break_in">休憩入</button>
-            @elseif($user->attendance_status === '休憩中')
+            @elseif($user->attendance_status === \App\Models\User::STATUS_ON_BREAK)
                 <button class="attendance__button--submit--break-out" type="submit" name="action" value="break_out">休憩戻</button>
-            @elseif($user->attendance_status === '退勤済')
+            @elseif($user->attendance_status === \App\Models\User::STATUS_CLOCKED_OUT)
                 <p class="attendance__message">お疲れ様でした。</p>
             @endif
         </div>

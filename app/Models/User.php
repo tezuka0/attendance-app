@@ -15,6 +15,15 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // 勤怠ステータス
+    const STATUS_OFF_DUTY = '勤務外';
+
+    const STATUS_WORKING = '出勤中';
+
+    const STATUS_ON_BREAK = '休憩中';
+
+    const STATUS_CLOCKED_OUT = '退勤済';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -86,21 +95,21 @@ class User extends Authenticatable implements MustVerifyEmail
 
         // 今日の勤怠レコードがない
         if (! $attendance) {
-            return '勤務外';
+            return self::STATUS_OFF_DUTY;
         }
 
         // 退勤時間が入っている
         if ($attendance->clock_out) {
-            return '退勤済';
+            return self::STATUS_CLOCKED_OUT;
         }
 
         // 終了時刻が空の休憩がある
         if ($attendance->breakTimes()->whereNull('break_end')->exists()) {
-            return '休憩中';
+            return self::STATUS_ON_BREAK;
         }
 
         // 上記以外
-        return '出勤中';
+        return self::STATUS_WORKING;
     }
 
     /**

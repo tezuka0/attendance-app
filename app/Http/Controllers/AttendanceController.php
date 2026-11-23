@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceCorrectRequest;
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,24 +44,24 @@ class AttendanceController extends Controller
         $status = $user->attendance_status;
         $time = now()->format('H:i:s');
 
-        if ($action === 'clock_in' && $status === '勤務外') {
+        if ($action === 'clock_in' && $status === User::STATUS_OFF_DUTY) {
             AttendanceRecord::create([
                 'user_id' => $user->id,
                 'date' => today(),
                 'clock_in' => $time,
             ]);
-        } elseif ($action === 'break_in' && $status === '出勤中') {
+        } elseif ($action === 'break_in' && $status === User::STATUS_WORKING) {
             // 休憩入り
             $user->todayAttendance()->breakTimes()->create([
                 'break_start' => $time,
             ]);
-        } elseif ($action === 'break_out' && $status === '休憩中') {
+        } elseif ($action === 'break_out' && $status === User::STATUS_ON_BREAK) {
             // 休憩戻り
             $user->todayAttendance()->breakTimes()
                 ->whereNull('break_end')
                 ->first()
                 ->update(['break_end' => $time]);
-        } elseif ($action === 'clock_out' && $status === '出勤中') {
+        } elseif ($action === 'clock_out' && $status === User::STATUS_WORKING) {
             // 退勤
             $user->todayAttendance()->update([
                 'clock_out' => $time,

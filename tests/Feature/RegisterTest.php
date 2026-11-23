@@ -22,7 +22,7 @@ class RegisterTest extends TestCase
         $response->assertSessionHasErrors(['name' => 'お名前を入力してください']);
     }
 
-    //メールアドレスがメールアドレスが未入力の場合、バリデーションメッセージが表示される
+    //メールアドレスが未入力の場合、バリデーションメッセージが表示される
     public function test_email_is_required(): void
     {
         $response = $this->post('/register', [

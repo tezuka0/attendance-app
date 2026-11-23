@@ -16,6 +16,7 @@ class BreakTime extends Model
         'break_end',
     ];
 
+    /** 休憩の勤怠 */
     public function attendanceRecord(): BelongsTo
     {
         return $this->belongsTo(AttendanceRecord::class);

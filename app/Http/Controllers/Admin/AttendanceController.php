@@ -58,7 +58,7 @@ class AttendanceController extends Controller
         $breaks = $record ? $record->breakTimes : collect();
 
         $attendanceRecord = [
-            'id' => $record ? $record->user_id : $date->format('Y-m-d'),
+            'id' => $record ? $record->id : $date->format('Y-m-d').'?user_id='.$user->id,
             'year' => $date->format('Y').'年',
             'date' => $date->format('n月j日'),
             'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
@@ -77,19 +77,20 @@ class AttendanceController extends Controller
      * 管理者が勤怠を直接修正する
      *
      * 申請を作らずに勤怠を更新する。休憩は、送られた内容ですべて作り直す。
-     * 
+     * 打刻のない日も修正できるよう、その日の勤怠がなければ新しく作って保存する。
      * 一般ユーザー用の AttendanceCorrectRequestController::store から呼ばれる。
      *
-     * @param  AttendanceCorrectRequestRequest  $request  修正後の出勤・退勤・休憩・備考（バリデーション済み）
-     * @param  string  $id  勤怠の id、または打刻のない日の日付 (Y-m-d)
+     * @param  AttendanceCorrectRequestRequest  $request  修正後の出勤・退勤・休憩・備考（バリデーション済み）。打刻のない日は user_id も入る
+     * @param  string  $id  勤怠の id、または打刻のない日の日付（Y-m-d）
      * @return RedirectResponse 修正した日の勤怠一覧へのリダイレクト
      */
     public function update(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
-        if (ctype_digit(&id)) {
+        if (ctype_digit($id)) {
             $record = AttendanceRecord::findOrFail($id);
         } else {
-            $record = User::where('admin_status', false)->faidPrFail($request->query('user_id'));
+            $user = User::where('admin_status', false)->findOrFail($request->query('user_id'));
+
             // その日の勤怠があれば取得し、なければ保存前の新しい勤怠を用意する
             $record = $user->attendanceRecords()->firstOrNew([
                 'date' => Carbon::parse($id)->toDateString(),

@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceCorrectRequestController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\AttendanceReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/attendance/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::get('/application/{id}', [AttendanceCorrectRequestController::class, 'redirectToDetail'])->where('id', '[0-9]+');
     Route::get('/stamp_correction_request/list', [AttendanceCorrectRequestController::class, 'index']);
+    Route::get('/attendance/report', [AttendanceReportController::class, 'index']);
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {

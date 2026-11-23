@@ -6,13 +6,15 @@ use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
 use App\Models\AttendanceCorrectRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Carbon\Carbon;
 
 class AttendanceCorrectRequestController extends Controller
 {
     // 申請一覧の「詳細」から、対応する勤怠詳細へ移動する
-    public function redirectToDetail($id)
+    public function redirectToDetail(string $id): RedirectResponse
     {
         // 自分の申請から探す（他人の申請や存在しない id なら 404）
         $application = Auth::user()->attendanceCorrectRequests()->findOrFail($id);
@@ -25,7 +27,7 @@ class AttendanceCorrectRequestController extends Controller
     }
 
     // 修正申請を保存する
-    public function store(AttendanceCorrectRequestRequest $request, $id)
+    public function store(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
         $user = Auth::user();
 
@@ -74,7 +76,7 @@ class AttendanceCorrectRequestController extends Controller
     }
 
     // 申請一覧を表示する
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
 

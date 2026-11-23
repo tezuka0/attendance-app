@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceCorrectRequest;
 use App\Models\AttendanceRecord;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class AttendanceCorrectRequestController extends Controller
 {
     //申請一覧（全ユーザー）
-    public function index()
+    public function index(): View
     {
         $applications = AttendanceCorrectRequest::with('user', 'attendanceRecord')
             ->latest()
@@ -20,7 +22,7 @@ class AttendanceCorrectRequestController extends Controller
     }
 
     //修正申請承認画面
-    public function show($attendanceCorrectRequestId)
+    public function show(string $attendanceCorrectRequestId): View
     {
         $application = AttendanceCorrectRequest::with('user', 'proposalBreaks')
             ->findOrFail($attendanceCorrectRequestId);
@@ -31,7 +33,7 @@ class AttendanceCorrectRequestController extends Controller
     }
 
     //修正申請を承認する
-    public function approve($attendanceCorrectRequestId)
+    public function approve(string $attendanceCorrectRequestId): RedirectResponse
     {
         $application = AttendanceCorrectRequest::with('proposalBreaks')
             ->findOrFail($attendanceCorrectRequestId);

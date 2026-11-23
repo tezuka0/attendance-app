@@ -7,13 +7,15 @@ use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
     //日次勤怠一覧
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $date = Carbon::parse($request->query('date', now()))->startOfDay();
 
@@ -28,7 +30,7 @@ class AttendanceController extends Controller
     }
 
     //管理者の勤怠詳細
-    public function show(Request $request, $id)
+    public function show(Request $request, string $id): View
     {
         if (ctype_digit($id)) {
             $record = AttendanceRecord::with('breakTimes')->findOrFail($id);
@@ -59,7 +61,7 @@ class AttendanceController extends Controller
     }
 
     //管理者が勤怠を直接修正する
-    public function update(AttendanceCorrectRequestRequest $request, $id)
+    public function update(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
         $record = AttendanceRecord::findOrFail($id);
 

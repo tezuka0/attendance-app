@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
 use App\Models\AttendanceCorrectRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
     //勤怠登録画面を表示する
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
 
@@ -23,7 +25,7 @@ class AttendanceController extends Controller
     }
 
     //打刻する
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $action = $request->input('action');
@@ -59,7 +61,7 @@ class AttendanceController extends Controller
     }
 
     //勤怠一覧を表示する
-    public function list(Request $request)
+    public function list(Request $request): View
     {
         $user = Auth::user();
 
@@ -74,7 +76,7 @@ class AttendanceController extends Controller
     }
 
     //「詳細」リンクから勤怠詳細へ移動する
-    public function redirectToDetail(Request $request, $id)
+    public function redirectToDetail(Request $request, string $id): RedirectResponse
     {
         $user = Auth::user();
 
@@ -93,7 +95,7 @@ class AttendanceController extends Controller
     }
 
     //勤怠詳細を表示する
-    public function show($id)
+    public function show(string $id): View
     {
         $user = Auth::user();
 
@@ -131,4 +133,3 @@ class AttendanceController extends Controller
         return view('user.user-detail', compact('user', 'data'));
     }
 }
-

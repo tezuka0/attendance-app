@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Carbon\Carbon;
 
 class StaffController extends Controller
 {
     //スタッフ一覧
-    public function index()
+    public function index(): View
     {
         $users = User::where('admin_status', false)->get();
 
@@ -18,7 +19,7 @@ class StaffController extends Controller
     }
 
     //スタッフ別の月次勤怠
-    public function show(Request $request, $id)
+    public function show(Request $request, string $id): View
     {
         $user = User::where('admin_status', false)->findOrFail($id);
 

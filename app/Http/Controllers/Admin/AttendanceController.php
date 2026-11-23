@@ -96,16 +96,14 @@ class AttendanceController extends Controller
 
             $record->breakTimes()->delete();
 
-            foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-                if (empty($breakIn)) {
-                    continue;
-                }
-
-                $record->breakTimes()->create([
-                    'break_start' => $breakIn,
-                    'break_end' => $request->input("new_break_out.{$index}"),
-                ]);
-            }
+            $record->breakTimes()->createMany(
+                collect($request->input('new_break_in', []))
+                    ->filter()
+                    ->map(fn ($breakIn, $index) => [
+                        'break_start' => $breakIn,
+                        'break_end' => $request->input("new_break_out.{$index}"),
+                    ])
+            );
         });
 
         return redirect('/admin/attendance/list?date=' . $record->date->format('Y-m-d'));

@@ -76,12 +76,12 @@ class AttendanceCorrectRequestController extends Controller
             //休憩を申請の内容で作り直す
             $record->breakTimes()->delete();
 
-            foreach ($application->proposalBreaks as $break) {
-                $record->breakTimes()->create([
+            $record->breakTimes()->createMany(
+                $application->proposalBreaks->map(fn ($break) => [
                     'break_start' => $break->break_start,
                     'break_end' => $break->break_end,
-                ]);
-            }
+                ])
+            );
 
             //申請を承認済みにし、勤怠と結びつける
             $application->update([

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class User extends Authenticatable
 {
@@ -118,20 +119,21 @@ class User extends Authenticatable
             ->get()
             ->keyBy(fn($record) => $record->date->format('Y-m-d'));
 
-        $formattedAttendanceRecords = [];
-        for ($day = $month->copy(); $day->lte($month->copy()->endOfMonth()); $day->addDay()) {
-            $record = $records[$day->format('Y-m-d')] ?? null;
+        $days = CarbonPeriod::create($month->copy()->startOfMonth(), $month->copy()->endOfMonth());
 
-            $formattedAttendanceRecords[] = [
-                'id' => $record ? $record->id : $day->format('Y-m-d'),
-                'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
-                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
-                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => $record ? $record->total_break_time : null,
-                'total_time' => $record ? $record->total_time : null,
-            ];
-        }
+        return collect($days)
+            ->map(function (Carbon $day) use ($records) {
+                $record = $records[$day->format('Y-m-d')] ?? null;
 
-        return $formattedAttendanceRecords;
+                return [
+                    'id' => $record ? $record->id : $day->format('Y-m-d'),
+                    'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
+                    'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                    'total_break_time' => $record ? $record->total_break_time : null,
+                    'total_time' => $record ? $record->total_time : null,
+                ];
+            })
+            ->all();
     }
 }

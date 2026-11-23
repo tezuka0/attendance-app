@@ -45,15 +45,17 @@ class StaffController extends Controller
         $formattedAttendanceRecords = $user->monthlyAttendanceRecords($date);
 
         // 打刻のない日は、管理者の勤怠詳細で対象ユーザーが分かるよう user_id を付ける
-        $formattedAttendanceRecords = array_map(function ($attendanceRecord) use ($user) {
-            if (ctype_digit((string) $attendanceRecord['id'])) {
+        $formattedAttendanceRecords = collect($formattedAttendanceRecords)
+            ->map(function ($attendanceRecord) use ($user) {
+                if (ctype_digit((string) $attendanceRecord['id'])) {
+                    return $attendanceRecord;
+                }
+
+                $attendanceRecord['id'] .= '?user_id=' . $user->id;
+
                 return $attendanceRecord;
-            }
-
-            $attendanceRecord['id'] .= '?user_id=' . $user->id;
-
-            return $attendanceRecord;
-        }, $formattedAttendanceRecords);
+            })
+            ->all();
 
         return view('admin.staff-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords', 'user'));
     }

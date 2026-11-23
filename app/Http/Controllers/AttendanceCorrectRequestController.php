@@ -76,17 +76,14 @@ class AttendanceCorrectRequestController extends Controller
             'status' => AttendanceCorrectRequest::STATUS_PENDING,
         ]);
 
-        foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-            if (empty($breakIn)) {
-                continue;
-            }
-
-            $breakOut = $request->input("new_break_out.{$index}");
-            $application->proposalBreaks()->create([
-                'break_start' => $breakIn,
-                'break_end' => $breakOut,
-            ]);
-        }
+        $application->proposalBreaks()->createMany(
+            collect($request->input('new_break_in', []))
+                ->filter()
+                ->map(fn ($breakIn, $index) => [
+                    'break_start' => $breakIn,
+                    'break_end' => $request->input("new_break_out.{$index}"),
+                ])
+        );
 
         return redirect('/stamp_correction_request/list');
     }

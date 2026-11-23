@@ -12,6 +12,9 @@ class AttendanceRecord extends Model
 {
     use HasFactory;
 
+    // 1日の所定労働時間（分）。これを超えた分が残業になる
+    const REGULAR_WORK_MINUTES = 480;
+
     protected $fillable = [
         'user_id',
         'date',
@@ -103,5 +106,21 @@ class AttendanceRecord extends Model
         }
 
         return Carbon::parse($this->clock_in)->diffInMinutes($this->clock_out) - ($this->totalBreakMinutes());
+    }
+
+    /**
+     * 残業時間を分で返す（勤務時間のうち 8 時間を超えた分）
+     *
+     * @return int|null 残業時間（分）。退勤していなければ null
+     */
+    public function overtimeMinutes(): ?int
+    {
+        $workMinutes = $this->totalWorkMinutes();
+
+        if ($workMinutes === null) {
+            return null;
+        }
+
+        return max(0, $workMinutes - self::REGULAR_WORK_MINUTES);
     }
 }

@@ -10,56 +10,56 @@ coachtech 模擬案件の勤怠管理アプリです。一般ユーザーは出�
 
 1. リポジトリをクローンする
 
-   ```bash
-   git clone git@github.com:tezuka0/attendance-app.git
-   cd attendance-app
-   ```
+    ```bash
+    git clone git@github.com:tezuka0/attendance-app.git
+    cd attendance-app
+    ```
 
 2. PHP のパッケージをインストールする（`vendor` がまだないため、Docker で直接実行する）
 
-   ```bash
-   docker run --rm \
-       -u "$(id -u):$(id -g)" \
-       -v "$(pwd):/var/www/html" \
-       -w /var/www/html \
-       laravelsail/php82-composer:latest \
-       composer install --ignore-platform-reqs
-   ```
+    ```bash
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v "$(pwd):/var/www/html" \
+        -w /var/www/html \
+        laravelsail/php82-composer:latest \
+        composer install --ignore-platform-reqs
+    ```
 
 3. 環境変数ファイルを作成する
 
-   ```bash
-   cp .env.example .env
-   ```
+    ```bash
+    cp .env.example .env
+    ```
 
-   `.env.example` には、Sail 用の DB（`DB_HOST=mysql` / `DB_USERNAME=sail` / `DB_PASSWORD=password`）とメール（`MAIL_HOST=mailpit` / `MAIL_PORT=1025`）の設定が入っています。
+    `.env.example` には、Sail 用の DB（`DB_HOST=mysql` / `DB_USERNAME=sail` / `DB_PASSWORD=password`）とメール（`MAIL_HOST=mailpit` / `MAIL_PORT=1025`）の設定が入っています。
 
 4. コンテナを起動する
 
-   ```bash
-   ./vendor/bin/sail up -d
-   ```
+    ```bash
+    ./vendor/bin/sail up -d
+    ```
 
 ### Laravel 環境構築
 
 1. アプリケーションキーを作成する
 
-   ```bash
-   ./vendor/bin/sail artisan key:generate
-   ```
+    ```bash
+    ./vendor/bin/sail artisan key:generate
+    ```
 
 2. マイグレーションと初期データを登録する
 
-   ```bash
-   ./vendor/bin/sail artisan migrate --seed
-   ```
+    ```bash
+    ./vendor/bin/sail artisan migrate --seed
+    ```
 
 3. フロントエンドをビルドする
 
-   ```bash
-   ./vendor/bin/sail npm install
-   ./vendor/bin/sail npm run build
-   ```
+    ```bash
+    ./vendor/bin/sail npm install
+    ./vendor/bin/sail npm run build
+    ```
 
 ### 参考：プロジェクト作成時の手順
 
@@ -67,102 +67,102 @@ coachtech 模擬案件の勤怠管理アプリです。一般ユーザーは出�
 
 1. Laravel 10 のプロジェクトを新規作成する
 
-   ```bash
-   docker run --rm \
-       -u "$(id -u):$(id -g)" \
-       -v "$(pwd):/var/www/html" \
-       -w /var/www/html \
-       -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
-       laravelsail/php82-composer:latest \
-       composer create-project laravel/laravel:^10.0 attendance-app
-   cd attendance-app
-   ```
+    ```bash
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v "$(pwd):/var/www/html" \
+        -w /var/www/html \
+        -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
+        laravelsail/php82-composer:latest \
+        composer create-project laravel/laravel:^10.0 attendance-app
+    cd attendance-app
+    ```
 
 2. Laravel Sail を導入する（mysql, mailpit）
 
-   ```bash
-   docker run --rm \
-       -u "$(id -u):$(id -g)" \
-       -v "$(pwd):/var/www/html" \
-       -w /var/www/html \
-       laravelsail/php82-composer:latest \
-       php artisan sail:install --with=mysql,mailpit
-   ```
+    ```bash
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v "$(pwd):/var/www/html" \
+        -w /var/www/html \
+        laravelsail/php82-composer:latest \
+        php artisan sail:install --with=mysql,mailpit
+    ```
 
 3. compose.yaml の mysql サービスの後に、phpMyAdmin を追加する
 
-   ```yaml
-   phpmyadmin:
-       image: 'phpmyadmin:latest'
-       ports:
-           - '${FORWARD_PHPMYADMIN_PORT:-8080}:80'
-       environment:
-           PMA_HOST: mysql
-           PMA_USER: '${DB_USERNAME}'
-           PMA_PASSWORD: '${DB_PASSWORD}'
-       networks:
-           - sail
-       depends_on:
-           - mysql
-   ```
+    ```yaml
+    phpmyadmin:
+        image: "phpmyadmin:latest"
+        ports:
+            - "${FORWARD_PHPMYADMIN_PORT:-8080}:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: "${DB_USERNAME}"
+            PMA_PASSWORD: "${DB_PASSWORD}"
+        networks:
+            - sail
+        depends_on:
+            - mysql
+    ```
 
 4. `.env` の DB とメールの設定を、次の値にする
 
-   ```dotenv
-   DB_CONNECTION=mysql
-   DB_HOST=mysql
-   DB_PORT=3306
-   DB_DATABASE=laravel
-   DB_USERNAME=sail
-   DB_PASSWORD=password
+    ```dotenv
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=sail
+    DB_PASSWORD=password
 
-   MAIL_MAILER=smtp
-   MAIL_HOST=mailpit
-   MAIL_PORT=1025
-   ```
+    MAIL_MAILER=smtp
+    MAIL_HOST=mailpit
+    MAIL_PORT=1025
+    ```
 
 5. 提供 Blade を移入する
 
-   ```bash
-   git clone -b basic https://github.com/coachtech-prepared-file/Preparedblade-mockcase-Attendance.git
-   ```
+    ```bash
+    git clone -b basic https://github.com/coachtech-prepared-file/Preparedblade-mockcase-Attendance.git
+    ```
 
-   クローンした `resources/` を、プロジェクトの `resources/` に上書きコピーします。応用機能の着手時に、`advanced` ブランチの `resources/` を再移入します。
+    クローンした `resources/` を、プロジェクトの `resources/` に上書きコピーします。応用機能の着手時に、`advanced` ブランチの `resources/` を再移入します。
 
 6. `vite.config.js` で、提供 CSS を個別に読み込むよう指定する
 
-   ```js
-   import { defineConfig } from 'vite';
-   import laravel from 'laravel-vite-plugin';
+    ```js
+    import { defineConfig } from "vite";
+    import laravel from "laravel-vite-plugin";
 
-   export default defineConfig({
-       plugins: [
-           laravel({
-               input: [
-                   'resources/js/app.js',
-                   'resources/css/sanitize.css',
-                   'resources/css/common.css',
-                   'resources/css/auth/verify-email.css',
-                   'resources/css/user/register.css',
-                   'resources/css/user/user-login.css',
-                   'resources/css/user/attendance-register.css',
-                   'resources/css/user/user-attendance-list.css',
-                   'resources/css/user/user-detail.css',
-                   'resources/css/user/user-application-list.css',
-                   'resources/css/admin/admin-login.css',
-                   'resources/css/admin/admin-attendance-list.css',
-                   'resources/css/admin/admin-detail.css',
-                   'resources/css/admin/admin-application-list.css',
-                   'resources/css/admin/admin-application-detail.css',
-                   'resources/css/admin/staff-list.css',
-                   'resources/css/admin/staff-attendance-list.css',
-                   'resources/css/reports/index.css',
-               ],
-               refresh: true,
-           }),
-       ],
-   });
-   ```
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: [
+                    "resources/js/app.js",
+                    "resources/css/sanitize.css",
+                    "resources/css/common.css",
+                    "resources/css/auth/verify-email.css",
+                    "resources/css/user/register.css",
+                    "resources/css/user/user-login.css",
+                    "resources/css/user/attendance-register.css",
+                    "resources/css/user/user-attendance-list.css",
+                    "resources/css/user/user-detail.css",
+                    "resources/css/user/user-application-list.css",
+                    "resources/css/admin/admin-login.css",
+                    "resources/css/admin/admin-attendance-list.css",
+                    "resources/css/admin/admin-detail.css",
+                    "resources/css/admin/admin-application-list.css",
+                    "resources/css/admin/admin-application-detail.css",
+                    "resources/css/admin/staff-list.css",
+                    "resources/css/admin/staff-attendance-list.css",
+                    "resources/css/reports/index.css",
+                ],
+                refresh: true,
+            }),
+        ],
+    });
+    ```
 
 7. 起動と初期化は、上の「Docker ビルド」の手順4と「Laravel 環境構築」と同じです。
 
@@ -186,22 +186,22 @@ coachtech 模擬案件の勤怠管理アプリです。一般ユーザーは出�
 
 ## URL
 
-| 画面 | URL |
-|---|---|
-| 一般ユーザー ログイン | http://localhost/login |
-| 管理者 ログイン | http://localhost/admin/login |
-| phpMyAdmin | http://localhost:8080/ |
-| Mailpit（認証メールの確認） | http://localhost:8025/ |
+| 画面                        | URL                          |
+| --------------------------- | ---------------------------- |
+| 一般ユーザー ログイン       | http://localhost/login       |
+| 管理者 ログイン             | http://localhost/admin/login |
+| phpMyAdmin                  | http://localhost:8080/       |
+| Mailpit（認証メールの確認） | http://localhost:8025/       |
 
 ## ログイン情報
 
 `migrate --seed` で次のユーザーが作成されます。パスワードはすべて `password` です。
 
-| ユーザー | 名前 | メールアドレス | 権限 |
-|---|---|---|---|
+| ユーザー  | 名前     | メールアドレス    | 権限         |
+| --------- | -------- | ----------------- | ------------ |
 | ユーザー1 | 田中太郎 | user1@example.com | 一般ユーザー |
 | ユーザー2 | 佐藤花子 | user2@example.com | 一般ユーザー |
-| ユーザー3 | 管理者 | user3@example.com | 管理者 |
+| ユーザー3 | 管理者   | user3@example.com | 管理者       |
 
 ユーザー1には、マイ勤怠レポートの検証用に固定の勤怠データ（過去5か月と今月）が入っています。ユーザー2・ユーザー3には、ランダムな勤怠データが入っています。
 
@@ -233,3 +233,7 @@ App\Models\User::where('email', 'user1@example.com')->first()->createToken('api'
 ```
 
 表示されたトークンを、リクエストの `Authorization: Bearer {トークン}` ヘッダーに付けて送信します。
+
+##作成者
+
+手塚誉幸

@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1760" height="786" viewBox="0 0 1760 786" style="max-width: 100%; height: auto;">
+<style>
+text { font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif; font-size: 13px; fill: #0f172a; }
+.th { font-size: 15px; font-weight: 700; fill: #ffffff; }
+.pk { font-weight: 700; fill: #b45309; }
+.fk { font-weight: 700; fill: #1d4ed8; }
+.ty { fill: #475569; }
+.ky { fill: #475569; font-size: 12px; }
+.nt { fill: #475569; font-size: 12px; }
+.lg-h { font-size: 16px; font-weight: 700; }
+</style>
+<rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+<rect x="40" y="300" width="500" height="274" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M40 306 q0 -6 6 -6 h488 q6 0 6 6 v28 h-500 z" fill="#1e3a5f"/>
+<text x="290.0" y="322" text-anchor="middle" class="th">users</text>
+<text x="54" y="351" class="pk">id</text>
+<text x="302" y="351" class="ty">unsigned bigint</text>
+<text x="432" y="351" class="ky">PK</text>
+<rect x="41" y="360" width="498" height="26" fill="#f1f5f9"/>
+<text x="54" y="377" class="td">name</text>
+<text x="302" y="377" class="ty">varchar(255)</text>
+<text x="432" y="377" class="ky"></text>
+<text x="54" y="403" class="td">email</text>
+<text x="302" y="403" class="ty">varchar(255)</text>
+<text x="432" y="403" class="ky">UNIQUE</text>
+<rect x="41" y="412" width="498" height="26" fill="#f1f5f9"/>
+<text x="54" y="429" class="td">email_verified_at</text>
+<text x="302" y="429" class="ty">timestamp</text>
+<text x="432" y="429" class="ky">NULL</text>
+<text x="54" y="455" class="td">password</text>
+<text x="302" y="455" class="ty">varchar(255)</text>
+<text x="432" y="455" class="ky"></text>
+<rect x="41" y="464" width="498" height="26" fill="#f1f5f9"/>
+<text x="54" y="481" class="td">admin_status</text>
+<text x="302" y="481" class="ty">boolean</text>
+<text x="432" y="481" class="ky">DEFAULT false</text>
+<text x="54" y="507" class="td">remember_token</text>
+<text x="302" y="507" class="ty">varchar(100)</text>
+<text x="432" y="507" class="ky">NULL</text>
+<rect x="41" y="516" width="498" height="26" fill="#f1f5f9"/>
+<text x="54" y="533" class="td">created_at</text>
+<text x="302" y="533" class="ty">timestamp</text>
+<text x="432" y="533" class="ky">NULL</text>
+<text x="54" y="559" class="td">updated_at</text>
+<text x="302" y="559" class="ty">timestamp</text>
+<text x="432" y="559" class="ky">NULL</text>
+<rect x="620" y="40" width="500" height="274" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M620 46 q0 -6 6 -6 h488 q6 0 6 6 v28 h-500 z" fill="#1e3a5f"/>
+<text x="870.0" y="62" text-anchor="middle" class="th">attendance_records</text>
+<text x="634" y="91" class="pk">id</text>
+<text x="882" y="91" class="ty">unsigned bigint</text>
+<text x="1012" y="91" class="ky">PK</text>
+<rect x="621" y="100" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="117" class="fk">user_id</text>
+<text x="882" y="117" class="ty">unsigned bigint</text>
+<text x="1012" y="117" class="ky">FK</text>
+<text x="634" y="143" class="td">date</text>
+<text x="882" y="143" class="ty">date</text>
+<text x="1012" y="143" class="ky"></text>
+<rect x="621" y="152" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="169" class="td">clock_in</text>
+<text x="882" y="169" class="ty">time</text>
+<text x="1012" y="169" class="ky"></text>
+<text x="634" y="195" class="td">clock_out</text>
+<text x="882" y="195" class="ty">time</text>
+<text x="1012" y="195" class="ky">NULL</text>
+<rect x="621" y="204" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="221" class="td">comment</text>
+<text x="882" y="221" class="ty">varchar(255)</text>
+<text x="1012" y="221" class="ky">NULL</text>
+<text x="634" y="247" class="td">created_at</text>
+<text x="882" y="247" class="ty">timestamp</text>
+<text x="1012" y="247" class="ky">NULL</text>
+<rect x="621" y="256" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="273" class="td">updated_at</text>
+<text x="882" y="273" class="ty">timestamp</text>
+<text x="1012" y="273" class="ky">NULL</text>
+<line x1="620" y1="282" x2="1120" y2="282" stroke="#cbd5e1"/>
+<text x="634" y="299" class="nt">UNIQUE(user_id, date)</text>
+<rect x="1220" y="40" width="500" height="222" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M1220 46 q0 -6 6 -6 h488 q6 0 6 6 v28 h-500 z" fill="#1e3a5f"/>
+<text x="1470.0" y="62" text-anchor="middle" class="th">break_times</text>
+<text x="1234" y="91" class="pk">id</text>
+<text x="1482" y="91" class="ty">unsigned bigint</text>
+<text x="1612" y="91" class="ky">PK</text>
+<rect x="1221" y="100" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="117" class="fk">attendance_record_id</text>
+<text x="1482" y="117" class="ty">unsigned bigint</text>
+<text x="1612" y="117" class="ky">FK</text>
+<text x="1234" y="143" class="td">break_start</text>
+<text x="1482" y="143" class="ty">time</text>
+<text x="1612" y="143" class="ky"></text>
+<rect x="1221" y="152" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="169" class="td">break_end</text>
+<text x="1482" y="169" class="ty">time</text>
+<text x="1612" y="169" class="ky">NULL</text>
+<text x="1234" y="195" class="td">created_at</text>
+<text x="1482" y="195" class="ty">timestamp</text>
+<text x="1612" y="195" class="ky">NULL</text>
+<rect x="1221" y="204" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="221" class="td">updated_at</text>
+<text x="1482" y="221" class="ty">timestamp</text>
+<text x="1612" y="221" class="ky">NULL</text>
+<line x1="1220" y1="230" x2="1720" y2="230" stroke="#cbd5e1"/>
+<text x="1234" y="247" class="nt">attendance_record_id：親の削除時に CASCADE</text>
+<rect x="620" y="420" width="500" height="326" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M620 426 q0 -6 6 -6 h488 q6 0 6 6 v28 h-500 z" fill="#1e3a5f"/>
+<text x="870.0" y="442" text-anchor="middle" class="th">attendance_correct_requests</text>
+<text x="634" y="471" class="pk">id</text>
+<text x="882" y="471" class="ty">unsigned bigint</text>
+<text x="1012" y="471" class="ky">PK</text>
+<rect x="621" y="480" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="497" class="fk">user_id</text>
+<text x="882" y="497" class="ty">unsigned bigint</text>
+<text x="1012" y="497" class="ky">FK</text>
+<text x="634" y="523" class="fk">attendance_record_id</text>
+<text x="882" y="523" class="ty">unsigned bigint</text>
+<text x="1012" y="523" class="ky">FK, NULL</text>
+<rect x="621" y="532" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="549" class="td">date</text>
+<text x="882" y="549" class="ty">date</text>
+<text x="1012" y="549" class="ky"></text>
+<text x="634" y="575" class="td">clock_in</text>
+<text x="882" y="575" class="ty">time</text>
+<text x="1012" y="575" class="ky"></text>
+<rect x="621" y="584" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="601" class="td">clock_out</text>
+<text x="882" y="601" class="ty">time</text>
+<text x="1012" y="601" class="ky"></text>
+<text x="634" y="627" class="td">comment</text>
+<text x="882" y="627" class="ty">varchar(255)</text>
+<text x="1012" y="627" class="ky"></text>
+<rect x="621" y="636" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="653" class="td">status</text>
+<text x="882" y="653" class="ty">tinyint</text>
+<text x="1012" y="653" class="ky">DEFAULT 0</text>
+<text x="634" y="679" class="td">created_at</text>
+<text x="882" y="679" class="ty">timestamp</text>
+<text x="1012" y="679" class="ky">NULL</text>
+<rect x="621" y="688" width="498" height="26" fill="#f1f5f9"/>
+<text x="634" y="705" class="td">updated_at</text>
+<text x="882" y="705" class="ty">timestamp</text>
+<text x="1012" y="705" class="ky">NULL</text>
+<line x1="620" y1="714" x2="1120" y2="714" stroke="#cbd5e1"/>
+<text x="634" y="731" class="nt">attendance_record_id：親の削除時に NULL / status 0:承認待ち 1:承認済み</text>
+<rect x="1220" y="470" width="500" height="222" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M1220 476 q0 -6 6 -6 h488 q6 0 6 6 v28 h-500 z" fill="#1e3a5f"/>
+<text x="1470.0" y="492" text-anchor="middle" class="th">attendance_correct_request_breaks</text>
+<text x="1234" y="521" class="pk">id</text>
+<text x="1482" y="521" class="ty">unsigned bigint</text>
+<text x="1612" y="521" class="ky">PK</text>
+<rect x="1221" y="530" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="547" class="fk">attendance_correct_request_id</text>
+<text x="1482" y="547" class="ty">unsigned bigint</text>
+<text x="1612" y="547" class="ky">FK</text>
+<text x="1234" y="573" class="td">break_start</text>
+<text x="1482" y="573" class="ty">time</text>
+<text x="1612" y="573" class="ky"></text>
+<rect x="1221" y="582" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="599" class="td">break_end</text>
+<text x="1482" y="599" class="ty">time</text>
+<text x="1612" y="599" class="ky"></text>
+<text x="1234" y="625" class="td">created_at</text>
+<text x="1482" y="625" class="ty">timestamp</text>
+<text x="1612" y="625" class="ky">NULL</text>
+<rect x="1221" y="634" width="498" height="26" fill="#f1f5f9"/>
+<text x="1234" y="651" class="td">updated_at</text>
+<text x="1482" y="651" class="ty">timestamp</text>
+<text x="1612" y="651" class="ky">NULL</text>
+<line x1="1220" y1="660" x2="1720" y2="660" stroke="#cbd5e1"/>
+<text x="1234" y="677" class="nt">attendance_correct_request_id：親の削除時に CASCADE</text>
+<path d="M540 347.0 H575 V113.0 H620" stroke="#334155" stroke-width="1.5" fill="none"/>
+<line x1="548" y1="339.0" x2="548" y2="355.0" stroke="#334155" stroke-width="1.5"/><line x1="554" y1="339.0" x2="554" y2="355.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M606 113.0 L620 105.0 M606 113.0 L620 121.0 M606 113.0 L620 113.0" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="600" y1="105.0" x2="600" y2="121.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M540 347.0 H575 V493.0 H620" stroke="#334155" stroke-width="1.5" fill="none"/>
+<line x1="548" y1="339.0" x2="548" y2="355.0" stroke="#334155" stroke-width="1.5"/><line x1="554" y1="339.0" x2="554" y2="355.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M606 493.0 L620 485.0 M606 493.0 L620 501.0 M606 493.0 L620 493.0" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="600" y1="485.0" x2="600" y2="501.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M1120 87.0 H1170.0 V113.0 H1220" stroke="#334155" stroke-width="1.5" fill="none"/>
+<line x1="1128" y1="79.0" x2="1128" y2="95.0" stroke="#334155" stroke-width="1.5"/><line x1="1134" y1="79.0" x2="1134" y2="95.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M1206 113.0 L1220 105.0 M1206 113.0 L1220 121.0 M1206 113.0 L1220 113.0" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="1200" y1="105.0" x2="1200" y2="121.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M1120 467.0 H1170.0 V543.0 H1220" stroke="#334155" stroke-width="1.5" fill="none"/>
+<line x1="1128" y1="459.0" x2="1128" y2="475.0" stroke="#334155" stroke-width="1.5"/><line x1="1134" y1="459.0" x2="1134" y2="475.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M1206 543.0 L1220 535.0 M1206 543.0 L1220 551.0 M1206 543.0 L1220 543.0" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="1200" y1="535.0" x2="1200" y2="551.0" stroke="#334155" stroke-width="1.5"/>
+<path d="M620 87.0 H598 V519.0 H620" stroke="#334155" stroke-width="1.5" fill="none" stroke-dasharray="6 4"/>
+<line x1="612" y1="79.0" x2="612" y2="95.0" stroke="#334155" stroke-width="1.5"/><circle cx="600" cy="87.0" r="5" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M606 519.0 L620 511.0 M606 519.0 L620 527.0 M606 519.0 L620 519.0" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="600" y1="511.0" x2="600" y2="527.0" stroke="#334155" stroke-width="1.5"/>
+<rect x="40" y="40" width="500" height="200" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="54" y="66" class="lg-h">勤怠管理アプリ ER 図</text>
+<text x="54" y="94" class="nt">PK：主キー / FK：外部キー / NULL：NULL 許可</text>
+<line x1="54" y1="124" x2="144" y2="124" stroke="#334155" stroke-width="1.5"/>
+<line x1="62" y1="116" x2="62" y2="132" stroke="#334155" stroke-width="1.5"/><line x1="68" y1="116" x2="68" y2="132" stroke="#334155" stroke-width="1.5"/>
+<path d="M130 124 L144 116 M130 124 L144 132 M130 124 L144 124" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="124" y1="116" x2="124" y2="132" stroke="#334155" stroke-width="1.5"/>
+<text x="164" y="129" class="nt">1 対 多（子は必ず親を持つ）</text>
+<line x1="54" y1="160" x2="144" y2="160" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4"/>
+<line x1="62" y1="152" x2="62" y2="168" stroke="#334155" stroke-width="1.5"/><circle cx="74" cy="160" r="5" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path d="M130 160 L144 152 M130 160 L144 168 M130 160 L144 160" stroke="#334155" stroke-width="1.5" fill="none"/><line x1="124" y1="152" x2="124" y2="168" stroke="#334155" stroke-width="1.5"/>
+<text x="164" y="165" class="nt">0..1 対 多（親がなくてもよい）</text>
+<text x="54" y="200" class="nt">打刻のない日の修正申請は attendance_record_id が NULL</text>
+<text x="54" y="222" class="nt">管理者かどうかは users.admin_status で判定</text>
+</svg>

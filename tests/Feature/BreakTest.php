@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,7 +11,7 @@ class BreakTest extends TestCase
 {
     use RefreshDatabase;
 
-    //休憩ボタンが正しく機能する
+    // 休憩ボタンが正しく機能する
     public function test_break_in_button_works(): void
     {
         $this->travelTo(now()->setTime(12, 0));
@@ -29,7 +29,7 @@ class BreakTest extends TestCase
         $afterResponse->assertSee('休憩中');
     }
 
-    //休憩は1日に何回もできる
+    // 休憩は1日に何回もできる
     public function test_user_can_take_breaks_many_times_a_day(): void
     {
         $this->travelTo(now()->setTime(12, 0));
@@ -44,7 +44,7 @@ class BreakTest extends TestCase
         $response->assertSee('value="break_in"', false);
     }
 
-    //休憩戻ボタンが正しく機能する
+    // 休憩戻ボタンが正しく機能する
     public function test_break_out_button_works(): void
     {
         $this->travelTo(now()->setTime(12, 0));
@@ -64,7 +64,7 @@ class BreakTest extends TestCase
         $afterResponse->assertSee('出勤中');
     }
 
-    //休憩戻は1日に何回もできる
+    // 休憩戻は1日に何回もできる
     public function test_user_can_return_from_breaks_many_times_a_day(): void
     {
         $this->travelTo(now()->setTime(12, 0));
@@ -80,7 +80,7 @@ class BreakTest extends TestCase
         $response->assertSee('value="break_out"', false);
     }
 
-    //休憩時刻が勤怠一覧で確認できる
+    // 休憩時刻が勤怠一覧で確認できる
     public function test_break_time_is_shown_on_attendance_list(): void
     {
         $this->travelTo(now()->setTime(12, 0));
@@ -97,7 +97,7 @@ class BreakTest extends TestCase
         $response->assertSee('1:00');
     }
 
-    //ステータスが出勤中のユーザーを作成
+    // ステータスが出勤中のユーザーを作成
     private function createWorkingUser(): User
     {
         $user = User::factory()->create();

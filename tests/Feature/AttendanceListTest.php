@@ -2,18 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-//勤怠一覧情報取得機能（一般ユーザー）
+// 勤怠一覧情報取得機能（一般ユーザー）
 class AttendanceListTest extends TestCase
 {
     use RefreshDatabase;
 
-    //自分が行った勤怠情報が全て表示されている
+    // 自分が行った勤怠情報が全て表示されている
     public function test_attendance_records_are_shown(): void
     {
         $this->travelTo(Carbon::create(2026, 11, 15, 9, 0));
@@ -42,7 +42,7 @@ class AttendanceListTest extends TestCase
         $response->assertSee('17:45');
     }
 
-    //勤怠一覧画面に遷移した際に現在の月が表示される
+    // 勤怠一覧画面に遷移した際に現在の月が表示される
     public function test_current_month_is_shown(): void
     {
         $this->travelTo(Carbon::create(2026, 11, 15, 9, 0));
@@ -54,7 +54,7 @@ class AttendanceListTest extends TestCase
         $response->assertSee('2026/11');
     }
 
-    //「前月」を押下した際に表示月の前月の情報が表示される
+    // 「前月」を押下した際に表示月の前月の情報が表示される
     public function test_previous_month_is_shown(): void
     {
         $this->travelTo(Carbon::create(2026, 11, 15, 9, 0));
@@ -75,7 +75,7 @@ class AttendanceListTest extends TestCase
         $response->assertSee('09:00');
     }
 
-    //「翌月」を押下した際に表示月の翌月の情報が表示される
+    // 「翌月」を押下した際に表示月の翌月の情報が表示される
     public function test_next_month_is_shown(): void
     {
         $this->travelTo(Carbon::create(2026, 11, 15, 9, 0));
@@ -96,7 +96,7 @@ class AttendanceListTest extends TestCase
         $response->assertSee('09:00');
     }
 
-    //「詳細」を押下すると、その日の勤怠詳細画面に遷移する
+    // 「詳細」を押下すると、その日の勤怠詳細画面に遷移する
     public function test_detail_link_goes_to_attendance_detail(): void
     {
         $this->travelTo(Carbon::create(2026, 11, 15, 9, 0));
@@ -109,12 +109,12 @@ class AttendanceListTest extends TestCase
         ]);
 
         $listResponse = $this->actingAs($user)->get('/attendance/list');
-        $listResponse->assertSee('/attendance/' . $attendanceRecord->id);
+        $listResponse->assertSee('/attendance/'.$attendanceRecord->id);
 
-        $redirectResponse = $this->get('/attendance/' . $attendanceRecord->id);
-        $redirectResponse->assertRedirect('/attendance/detail/' . $attendanceRecord->id);
+        $redirectResponse = $this->get('/attendance/'.$attendanceRecord->id);
+        $redirectResponse->assertRedirect('/attendance/detail/'.$attendanceRecord->id);
 
-        $detailResponse = $this->get('/attendance/detail/' . $attendanceRecord->id);
+        $detailResponse = $this->get('/attendance/detail/'.$attendanceRecord->id);
         $detailResponse->assertStatus(200);
         $detailResponse->assertSee('11月2日');
     }

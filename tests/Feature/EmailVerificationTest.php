@@ -13,7 +13,7 @@ class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    //会員登録後、認証メールが送信される
+    // 会員登録後、認証メールが送信される
     public function test_verification_email_is_sent_after_register(): void
     {
         Notification::fake();
@@ -30,7 +30,7 @@ class EmailVerificationTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
-    //メール認証誘導画面で「認証はこちらから」ボタンを押下するとメール認証サイトに遷移する
+    // メール認証誘導画面で「認証はこちらから」ボタンを押下するとメール認証サイトに遷移する
     public function test_verify_button_links_to_mail_site(): void
     {
         $user = User::factory()->unverified()->create();
@@ -41,7 +41,7 @@ class EmailVerificationTest extends TestCase
         $response->assertSee('http://localhost:8025');
     }
 
-    //メール認証サイトのメール認証を完了すると、勤怠登録画面に遷移する
+    // メール認証サイトのメール認証を完了すると、勤怠登録画面に遷移する
     public function test_user_is_redirected_to_attendance_after_verification(): void
     {
         $user = User::factory()->unverified()->create();

@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-//マイ勤怠レポート機能
+// マイ勤怠レポート機能
 class AttendanceReportTest extends TestCase
 {
     use RefreshDatabase;
@@ -22,7 +22,7 @@ class AttendanceReportTest extends TestCase
         $this->travelTo(Carbon::create(2026, 11, 15, 12, 0));
     }
 
-    //ゲストはレポートページにアクセスできない
+    // ゲストはレポートページにアクセスできない
     public function test_guest_cannot_access_report(): void
     {
         $response = $this->get('/attendance/report');
@@ -30,7 +30,7 @@ class AttendanceReportTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    //認証ユーザーの統計情報が正しく計算される
+    // 認証ユーザーの統計情報が正しく計算される
     public function test_report_statistics_are_calculated_correctly(): void
     {
         $user = User::factory()->create();
@@ -75,7 +75,7 @@ class AttendanceReportTest extends TestCase
         ]);
     }
 
-    //勤怠記録がないユーザーで安全に処理される
+    // 勤怠記録がないユーザーで安全に処理される
     public function test_report_is_safe_without_attendance_records(): void
     {
         $user = User::factory()->create();
@@ -103,7 +103,7 @@ class AttendanceReportTest extends TestCase
         ]);
     }
 
-    //休憩 12:00〜13:00 付きの勤怠を1件作る
+    // 休憩 12:00〜13:00 付きの勤怠を1件作る
     private function createAttendance(User $user, string $date, string $clockIn, string $clockOut): void
     {
         $attendanceRecord = AttendanceRecord::factory()->create([

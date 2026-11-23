@@ -16,21 +16,21 @@ class AttendanceSeeder extends Seeder
      */
     public function run(): void
     {
-        //user1 レポート検証用の固定データ
+        // user1 レポート検証用の固定データ
         $user1 = User::where('email', 'user1@example.com')->first();
         $this->seedUser1($user1);
 
-        //user2 ・user3 : 実運用に近いランダムデータ
+        // user2 ・user3 : 実運用に近いランダムデータ
         $others = User::whereIn('email', ['user2@example.com', 'user3@example.com'])->get();
         foreach ($others as $user) {
             $this->seedRandom($user);
         }
     }
 
-    //user1 :過去５ヶ月（各15日） + 当月17日
+    // user1 :過去５ヶ月（各15日） + 当月17日
     private function seedUser1(User $user): void
     {
-        //過去５ヶ月 : ５ヶ月前 → １ヶ月前の順に、各月15日を通常勤務で作る
+        // 過去５ヶ月 : ５ヶ月前 → １ヶ月前の順に、各月15日を通常勤務で作る
         for ($i = 5; $i >= 1; $i--) {
             $month = now()->subMonthsNoOverflow($i)->startOfMonth();
 
@@ -39,7 +39,7 @@ class AttendanceSeeder extends Seeder
             }
         }
 
-        //当月 : 17日分のパターン（出勤、退勤）
+        // 当月 : 17日分のパターン（出勤、退勤）
         $patterns = array_merge(
             array_fill(0, 10, ['09:00:00', '18:00:00']), // 通常
             array_fill(0, 3, ['09:00:00', '20:00:00']),  // 残業
@@ -56,7 +56,7 @@ class AttendanceSeeder extends Seeder
         }
     }
 
-    //時刻を指定して勤怠一件＋休憩 12:00-13:00 を作成する
+    // 時刻を指定して勤怠一件＋休憩 12:00-13:00 を作成する
     private function createFixed(User $user, Carbon $date, string $clockIn, string $clockOut): void
     {
         $record = AttendanceRecord::create([
@@ -82,7 +82,7 @@ class AttendanceSeeder extends Seeder
         );
 
         foreach ($period as $date) {
-            if (!$date->isWeekday() || fake()->boolean(10)) {
+            if (! $date->isWeekday() || fake()->boolean(10)) {
                 continue;
             }
 

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class AttendanceRecord extends Model
 {
@@ -55,8 +55,8 @@ class AttendanceRecord extends Model
     public function totalBreakMinutes(): int
     {
         return $this->breakTimes
-            ->filter(fn($break) => !is_null($break->break_end))
-            ->sum(fn($break) => Carbon::parse($break->break_start)->diffInMinutes(Carbon::parse($break->break_end)));
+            ->filter(fn ($break) => ! is_null($break->break_end))
+            ->sum(fn ($break) => Carbon::parse($break->break_start)->diffInMinutes(Carbon::parse($break->break_end)));
     }
 
     /**
@@ -82,7 +82,7 @@ class AttendanceRecord extends Model
     /**
      * 分を H:MM 形式の文字列に変える
      *
-     * @param int|null $minutes 分
+     * @param  int|null  $minutes  分
      * @return string|null H:MM 形式の文字列。$minutes が null なら null
      */
     private function formatMinutes(?int $minutes): ?string

@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -18,7 +19,7 @@ return new class extends Migration {
             $table->time('clock_in');
             $table->time('clock_out');
             $table->string('comment');
-            $table->tinyInteger('status')->default(0); //0: 承認待ち 1: 承認済み
+            $table->tinyInteger('status')->default(0); // 0: 承認待ち 1: 承認済み
             $table->timestamps();
         });
     }

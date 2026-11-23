@@ -11,7 +11,6 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-
     /**
      * Validate and create a newly registered user.
      *
@@ -21,7 +20,7 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        $request = new RegisterRequest();
+        $request = new RegisterRequest;
 
         Validator::make($input, $request->rules(), $request->messages())->validate();
 

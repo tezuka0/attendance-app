@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 class UpdateAttendanceRecordRequest extends StoreAttendanceRecordRequest
@@ -9,7 +10,7 @@ class UpdateAttendanceRecordRequest extends StoreAttendanceRecordRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -28,7 +29,7 @@ class UpdateAttendanceRecordRequest extends StoreAttendanceRecordRequest
                     ->ignore($attendanceRecord),
             ],
             'clock_in' => ['sometimes', 'required', 'date_format:H:i:s'],
-            'clock_out' => ['nullable', 'date_format:H:i:s', 'after:' . $clockIn],
+            'clock_out' => ['nullable', 'date_format:H:i:s', 'after:'.$clockIn],
             'comment' => ['nullable', 'string', 'max:255'],
         ];
     }

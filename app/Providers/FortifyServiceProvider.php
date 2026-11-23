@@ -9,15 +9,15 @@ use App\Http\Responses\LogoutResponse;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;
+use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -41,13 +41,13 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::where('email', $request->email)->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
+            if (! $user || ! Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([
                     'email' => 'ログイン情報が登録されていません',
                 ]);
             }
 
-            if ($request->is('admin/*') && !$user->admin_status) {
+            if ($request->is('admin/*') && ! $user->admin_status) {
                 throw ValidationException::withMessages([
                     'email' => 'ログイン情報が登録されていません',
                 ]);
@@ -56,12 +56,12 @@ class FortifyServiceProvider extends ServiceProvider
             return $user;
         });
 
-        //会員登録画面
+        // 会員登録画面
         Fortify::registerView(function () {
             return view('user.register');
         });
 
-        //ログイン画面
+        // ログイン画面
         Fortify::loginView(function (Request $request) {
             if ($request->is('admin/*')) {
                 return view('admin.admin-login');
@@ -70,13 +70,13 @@ class FortifyServiceProvider extends ServiceProvider
             return view('user.user-login');
         });
 
-        //メール認証誘導画面
+        // メール認証誘導画面
         Fortify::verifyEmailView(function () {
             return view('auth.verify-email');
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });

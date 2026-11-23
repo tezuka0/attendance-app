@@ -30,7 +30,7 @@ class Handler extends ExceptionHandler
     {
         // 存在しない勤怠 ID（ModelNotFoundException）は 404 の JSON にする
         $this->renderable(function (NotFoundHttpException $e, Request $request) {
-            if (!$request->is('api/*') || !$e->getPrevious() instanceof ModelNotFoundException) {
+            if (! $request->is('api/*') || ! $e->getPrevious() instanceof ModelNotFoundException) {
                 return null;
             }
 
@@ -39,7 +39,7 @@ class Handler extends ExceptionHandler
 
         // Policy で拒否された（AuthorizationException）ときは 403 の JSON にする
         $this->renderable(function (AccessDeniedHttpException $e, Request $request) {
-            if (!$request->is('api/*') || !$e->getPrevious() instanceof AuthorizationException) {
+            if (! $request->is('api/*') || ! $e->getPrevious() instanceof AuthorizationException) {
                 return null;
             }
 

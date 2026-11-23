@@ -30,7 +30,7 @@ class AttendanceCorrectRequestController extends Controller
     /**
      * 修正申請の承認画面を表示する
      *
-     * @param string $attendanceCorrectRequestId 修正申請の id
+     * @param  string  $attendanceCorrectRequestId  修正申請の id
      * @return View 申請の内容と申請したユーザーを渡した承認画面
      */
     public function show(string $attendanceCorrectRequestId): View
@@ -49,7 +49,7 @@ class AttendanceCorrectRequestController extends Controller
      * 勤怠を申請の内容で更新し（打刻のない日は新しく作る）、休憩は申請の内容で作り直す。
      * 最後に申請を承認済みにする。すでに承認済みのときは何もしない。
      *
-     * @param string $attendanceCorrectRequestId 修正申請の id
+     * @param  string  $attendanceCorrectRequestId  修正申請の id
      * @return RedirectResponse 承認画面へのリダイレクト
      */
     public function approve(string $attendanceCorrectRequestId): RedirectResponse
@@ -57,13 +57,13 @@ class AttendanceCorrectRequestController extends Controller
         $application = AttendanceCorrectRequest::with('proposalBreaks')
             ->findOrFail($attendanceCorrectRequestId);
 
-        //承認済みなら何もしない
+        // 承認済みなら何もしない
         if ($application->status === AttendanceCorrectRequest::STATUS_APPROVED) {
-            return redirect('/stamp_correction_request/approve/' . $application->id);
+            return redirect('/stamp_correction_request/approve/'.$application->id);
         }
 
         DB::transaction(function () use ($application) {
-            //勤怠を更新する（打刻のない日は新しく作る）
+            // 勤怠を更新する（打刻のない日は新しく作る）
             $record = AttendanceRecord::updateOrCreate(
                 ['user_id' => $application->user_id, 'date' => $application->date->toDateString()],
                 [
@@ -73,7 +73,7 @@ class AttendanceCorrectRequestController extends Controller
                 ]
             );
 
-            //休憩を申請の内容で作り直す
+            // 休憩を申請の内容で作り直す
             $record->breakTimes()->delete();
 
             $record->breakTimes()->createMany(
@@ -83,13 +83,13 @@ class AttendanceCorrectRequestController extends Controller
                 ])
             );
 
-            //申請を承認済みにし、勤怠と結びつける
+            // 申請を承認済みにし、勤怠と結びつける
             $application->update([
                 'status' => AttendanceCorrectRequest::STATUS_APPROVED,
                 'attendance_record_id' => $record->id,
             ]);
         });
 
-        return redirect('/stamp_correction_request/approve/' . $application->id);
+        return redirect('/stamp_correction_request/approve/'.$application->id);
     }
 }

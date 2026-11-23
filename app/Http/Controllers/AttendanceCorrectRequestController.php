@@ -59,11 +59,11 @@ class AttendanceCorrectRequestController extends Controller
             $record = $user->attendanceRecords()->whereDate('date', $date)->first();
         }
 
-        $exists = $user->attendanceCorrectRequests()
+        $pendingRequestExists = $user->attendanceCorrectRequests()
             ->whereDate('date', $date)
             ->where('status', AttendanceCorrectRequest::STATUS_PENDING)
             ->exists();
-        if ($exists) {
+        if ($pendingRequestExists) {
             return redirect('/stamp_correction_request/list');
         }
 

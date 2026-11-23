@@ -21,9 +21,9 @@ class AttendanceSeeder extends Seeder
         $this->seedUser1($user1);
 
         // user2 ・user3 : 実運用に近いランダムデータ
-        $others = User::whereIn('email', ['user2@example.com', 'user3@example.com'])->get();
-        foreach ($others as $user) {
-            $this->seedRandom($user);
+        $otherUsers = User::whereIn('email', ['user2@example.com', 'user3@example.com'])->get();
+        foreach ($otherUsers as $user) {
+            $this->seedRandomAttendances($user);
         }
     }
 
@@ -35,7 +35,7 @@ class AttendanceSeeder extends Seeder
             $month = now()->subMonthsNoOverflow($i)->startOfMonth();
 
             foreach ($this->weekdaysOf($month, 15) as $date) {
-                $this->createFixed($user, $date, '09:00:00', '18:00:00');
+                $this->createFixedAttendance($user, $date, '09:00:00', '18:00:00');
             }
         }
 
@@ -52,12 +52,12 @@ class AttendanceSeeder extends Seeder
 
         foreach ($dates as $index => $date) {
             [$clockIn, $clockOut] = $patterns[$index];
-            $this->createFixed($user, $date, $clockIn, $clockOut);
+            $this->createFixedAttendance($user, $date, $clockIn, $clockOut);
         }
     }
 
     // 時刻を指定して勤怠一件＋休憩 12:00-13:00 を作成する
-    private function createFixed(User $user, Carbon $date, string $clockIn, string $clockOut): void
+    private function createFixedAttendance(User $user, Carbon $date, string $clockIn, string $clockOut): void
     {
         $record = AttendanceRecord::create([
             'user_id' => $user->id,
@@ -74,7 +74,7 @@ class AttendanceSeeder extends Seeder
     }
 
     // 5ヶ月前の月初〜昨日の平日。1割は休み
-    private function seedRandom(User $user): void
+    private function seedRandomAttendances(User $user): void
     {
         $period = CarbonPeriod::create(
             now()->subMonthsNoOverflow(5)->startOfMonth(),

@@ -234,6 +234,6 @@ App\Models\User::where('email', 'user1@example.com')->first()->createToken('api'
 
 表示されたトークンを、リクエストの `Authorization: Bearer {トークン}` ヘッダーに付けて送信します。
 
-##作成者
+## 作成者
 
 手塚誉幸

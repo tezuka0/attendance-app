@@ -35,7 +35,7 @@ Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])
      ->middleware('auth')
      ->name('admin.logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     //一般ユーザーの画面
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance', [AttendanceController::class, 'store']);
@@ -56,5 +56,5 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/attendance/staff/{id}', [StaffController::class, 'show'])->where('id', '[0-9]+');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceCorrectRequestController::class, 'show'])->where('attendance_correct_request_id', '[0-9]+');
     Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceCorrectRequestController::class, 'approve'])->where('attendance_correct_request_id', '[0-9]+');
+    Route::post('/export', [StaffController::class, 'export']);
 });
-

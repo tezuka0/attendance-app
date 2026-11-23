@@ -17,7 +17,6 @@ class AttendanceRecordFactory extends Factory
     public function definition(): array
     {
         return [
-            //
             'user_id' => \App\Models\User::factory(),
             'date' => $this->faker->date(),
             'clock_in' => $this->faker->dateTimeBetween('8:30', '9:30')->format('H:i:00'),

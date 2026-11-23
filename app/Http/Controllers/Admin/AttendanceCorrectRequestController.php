@@ -20,7 +20,7 @@ class AttendanceCorrectRequestController extends Controller
      */
     public function index(): View
     {
-        $applications = AttendanceCorrectRequest::with('user', 'attendanceRecord')
+        $applications = AttendanceCorrectRequest::with('user', 'AttendanceRecord')
             ->latest()
             ->get();
 

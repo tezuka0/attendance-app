@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class AttendanceController extends Controller
 {
     /**
-     * 全一般ユーザーの勤怠一覧（日単位）を表示する
+     * 全ユーザーの勤怠一覧（日単位）を表示する
      *
      * @param  Request  $request  date に表示する日（Y-m-d）が入る。なければ今日
      * @return View その日の勤怠と、前日・翌日のリンク用の値を渡した勤怠一覧画面
@@ -27,8 +27,7 @@ class AttendanceController extends Controller
         $previousDay = $date->copy()->subDay()->format('Y-m-d');
         $nextDay = $date->copy()->addDay()->format('Y-m-d');
 
-        $users = User::where('admin_status', false)->get();
-
+        $users = User::all();
         $attendanceRecords = AttendanceRecord::with('breakTimes')->whereDate('date', $date)->get();
 
         return view('admin.admin-attendance-list', compact('date', 'previousDay', 'nextDay', 'users', 'attendanceRecords'));

@@ -36,9 +36,20 @@ class AdminAttendanceListTest extends TestCase
             'clock_out' => '17:45:00',
         ]);
 
+        // 管理者の勤怠
+        AttendanceRecord::factory()->create([
+            'user_id' => $admin->id,
+            'date' => '2026-11-15',
+            'clock_in' => '10:00:00',
+            'clock_out' => '19:00:00',
+        ]);
+
         $response = $this->actingAs($admin)->get('/admin/attendance/list');
         $response->assertStatus(200);
         $response->assertSeeInOrder([
+            $admin->name,
+            '10:00',
+            '19:00',
             $firstUser->name,
             '09:00',
             '18:00',

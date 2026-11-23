@@ -30,7 +30,7 @@ class AttendanceCorrectRequestRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'new_clock_in.required' => '出勤時間もしくは退勤時間が不適切な値です',

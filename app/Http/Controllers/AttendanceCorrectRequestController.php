@@ -6,13 +6,22 @@ use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
 use App\Models\AttendanceCorrectRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Carbon\Carbon;
 
 class AttendanceCorrectRequestController extends Controller
 {
-    // 申請一覧の「詳細」から、対応する勤怠詳細へ移動する
-    public function redirectToDetail($id)
+    /**
+     * 申請一覧の「詳細」リンクから、対応する勤怠詳細画面へリダイレクトする
+     *
+     * 自分の申請だけを探す。他人の申請や存在しない id のときは 404 になる。
+     *
+     * @param string $id 修正申請の id
+     * @return RedirectResponse 勤怠詳細画面へのリダイレクト（勤怠がない日の申請は日付で移動する）
+     */
+    public function redirectToDetail(string $id): RedirectResponse
     {
         // 自分の申請から探す（他人の申請や存在しない id なら 404）
         $application = Auth::user()->attendanceCorrectRequests()->findOrFail($id);
@@ -24,8 +33,17 @@ class AttendanceCorrectRequestController extends Controller
         return redirect("/attendance/detail/{$target}");
     }
 
-    // 修正申請を保存する
-    public function store(AttendanceCorrectRequestRequest $request, $id)
+    /**
+     * 勤怠の修正申請を保存する
+     *
+     * 管理者のときは、申請を作らずに勤怠を直接修正する処理に任せる。
+     * 同じ日に承認待ちの申請がすでにあるときは、新しく作らない。
+     *
+     * @param AttendanceCorrectRequestRequest $request 修正後の出勤・退勤・休憩・備考（バリデーション済み）
+     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @return RedirectResponse 申請一覧画面へのリダイレクト（管理者のときは勤怠一覧へ）
+     */
+    public function store(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
         $user = Auth::user();
 
@@ -58,23 +76,26 @@ class AttendanceCorrectRequestController extends Controller
             'status' => AttendanceCorrectRequest::STATUS_PENDING,
         ]);
 
-        foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-            if (empty($breakIn)) {
-                continue;
-            }
-
-            $breakOut = $request->input("new_break_out.{$index}");
-            $application->proposalBreaks()->create([
-                'break_start' => $breakIn,
-                'break_end' => $breakOut,
-            ]);
-        }
+        $application->proposalBreaks()->createMany(
+            collect($request->input('new_break_in', []))
+                ->filter()
+                ->map(fn ($breakIn, $index) => [
+                    'break_start' => $breakIn,
+                    'break_end' => $request->input("new_break_out.{$index}"),
+                ])
+        );
 
         return redirect('/stamp_correction_request/list');
     }
 
-    // 申請一覧を表示する
-    public function index()
+    /**
+     * ログインユーザーの修正申請一覧を表示する
+     *
+     * 管理者のときは、全ユーザーの申請一覧を表示する処理に任せる。
+     *
+     * @return View 承認待ち・承認済みの申請を渡した申請一覧画面
+     */
+    public function index(): View
     {
         $user = Auth::user();
 

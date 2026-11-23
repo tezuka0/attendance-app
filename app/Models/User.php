@@ -6,9 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class User extends Authenticatable
 {
@@ -46,25 +47,40 @@ class User extends Authenticatable
         'admin_status' => 'boolean',
     ];
 
-    public function attendanceRecords()
+    /** ユーザーの勤怠 */
+    public function attendanceRecords(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);
     }
 
-    public function attendanceCorrectRequests()
+    /** ユーザーの修正申請 */
+    public function attendanceCorrectRequests(): HasMany
     {
         return $this->hasMany(AttendanceCorrectRequest::class);
     }
 
-    //今日の勤怠レコードを返す
-    public function todayAttendance()
+    /**
+     * 今日の勤怠を返す
+     *
+     * @return AttendanceRecord|null 今日の勤怠。まだ出勤していなければ null
+     */
+    public function todayAttendance(): ?AttendanceRecord
     {
         return $this->attendanceRecords()
             ->whereDate('date', today())
             ->first();
     }
 
-    public function getAttendanceStatusAttribute()
+    /**
+     * 今日の勤怠ステータスを返す（$user->attendance_status で使う）
+     *
+     * 次の順で判定する。
+     * 今日の勤怠がない → 勤務外 / 退勤している → 退勤済 /
+     * 終わっていない休憩がある → 休憩中 / それ以外 → 出勤中
+     *
+     * @return string 勤務外・出勤中・休憩中・退勤済のいずれか
+     */
+    public function getAttendanceStatusAttribute(): string
     {
         $attendance = $this->todayAttendance();
 
@@ -78,8 +94,8 @@ class User extends Authenticatable
             return '退勤済';
         }
 
-        //終了時刻がからの休憩がある
-        if ($attendance->breakTimes()->whereNull('break_end')->exists()){
+        //終了時刻が空の休憩がある
+        if ($attendance->breakTimes()->whereNull('break_end')->exists()) {
             return '休憩中';
         }
 
@@ -87,7 +103,14 @@ class User extends Authenticatable
         return '出勤中';
     }
 
-    //指定した月の勤怠一覧（1日ずつの配列）
+    /**
+     * 指定した月の勤怠を、1日ずつの表示用データにして返す
+     *
+     * 打刻のない日も、空の行として含める（その日の id には日付 Y-m-d が入る）。
+     *
+     * @param Carbon $month 表示する月（その月の1日）
+     * @return array<int, array{id: int|string, date: string, clock_in: string, clock_out: string, total_break_time: ?string, total_time: ?string}>
+     */
     public function monthlyAttendanceRecords(Carbon $month): array
     {
         $records = $this->attendanceRecords()
@@ -96,20 +119,21 @@ class User extends Authenticatable
             ->get()
             ->keyBy(fn($record) => $record->date->format('Y-m-d'));
 
-        $formattedAttendanceRecords = [];
-        for ($day = $month->copy(); $day->lte($month->copy()->endOfMonth()); $day->addDay()) {
-            $record = $records[$day->format('Y-m-d')] ?? null;
+        $days = CarbonPeriod::create($month->copy()->startOfMonth(), $month->copy()->endOfMonth());
 
-            $formattedAttendanceRecords[] = [
-                'id' => $record ? $record->id : $day->format('Y-m-d'),
-                'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
-                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
-                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => $record ? $record->total_break_time : null,
-                'total_time' => $record ? $record->total_time : null,
-            ];
-        }
+        return collect($days)
+            ->map(function (Carbon $day) use ($records) {
+                $record = $records[$day->format('Y-m-d')] ?? null;
 
-        return $formattedAttendanceRecords;
+                return [
+                    'id' => $record ? $record->id : $day->format('Y-m-d'),
+                    'date' => $day->locale('ja')->isoFormat('MM/DD(ddd)'),
+                    'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                    'total_break_time' => $record ? $record->total_break_time : null,
+                    'total_time' => $record ? $record->total_time : null,
+                ];
+            })
+            ->all();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendanceCorrectRequestBreak extends Model
 {
@@ -15,17 +16,20 @@ class AttendanceCorrectRequestBreak extends Model
         'break_end',
     ];
 
-    public function attendanceCorrectRequest()
+    /** 申請休憩の修正申請 */
+    public function attendanceCorrectRequest(): BelongsTo
     {
         return $this->belongsTo(AttendanceCorrectRequest::class);
     }
 
-    public function getBreakInAttribute()
+    /** 休憩開始の時刻を返す（$break->break_in で使う） */
+    public function getBreakInAttribute(): string
     {
         return $this->break_start;
     }
 
-    public function getBreakOutAttribute()
+    /** 休憩終了の時刻を返す（$break->break_out で使う）。未入力なら null */
+    public function getBreakOutAttribute(): ?string
     {
         return $this->break_end;
     }

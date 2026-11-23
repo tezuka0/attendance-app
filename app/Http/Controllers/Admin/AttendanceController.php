@@ -7,13 +7,20 @@ use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
-    //日次勤怠一覧
-    public function index(Request $request)
+    /**
+     * 全一般ユーザーの勤怠一覧（日単位）を表示する
+     *
+     * @param Request $request date に表示する日（Y-m-d）が入る。なければ今日
+     * @return View その日の勤怠と、前日・翌日のリンク用の値を渡した勤怠一覧画面
+     */
+    public function index(Request $request): View
     {
         $date = Carbon::parse($request->query('date', now()))->startOfDay();
 
@@ -27,8 +34,16 @@ class AttendanceController extends Controller
         return view('admin.admin-attendance-list', compact('date', 'previousDay', 'nextDay', 'users', 'attendanceRecords'));
     }
 
-    //管理者の勤怠詳細
-    public function show(Request $request, $id)
+    /**
+     * 管理者用の勤怠詳細を表示する
+     *
+     * $id が日付のときは、クエリの user_id でどのスタッフの勤怠かを決める。
+     *
+     * @param Request $request 打刻のない日を開くときは user_id（スタッフの id）が入る
+     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @return View 勤怠詳細画面
+     */
+    public function show(Request $request, string $id): View
     {
         if (ctype_digit($id)) {
             $record = AttendanceRecord::with('breakTimes')->findOrFail($id);
@@ -58,8 +73,17 @@ class AttendanceController extends Controller
         return view('admin.admin-detail', compact('user', 'attendanceRecord'));
     }
 
-    //管理者が勤怠を直接修正する
-    public function update(AttendanceCorrectRequestRequest $request, $id)
+    /**
+     * 管理者が勤怠を直接修正する
+     *
+     * 申請を作らずに勤怠を更新する。休憩は、送られた内容ですべて作り直す。
+     * 一般ユーザー用の AttendanceCorrectRequestController::store から呼ばれる。
+     *
+     * @param AttendanceCorrectRequestRequest $request 修正後の出勤・退勤・休憩・備考（バリデーション済み）
+     * @param string $id 勤怠の id
+     * @return RedirectResponse 修正した日の勤怠一覧へのリダイレクト
+     */
+    public function update(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
         $record = AttendanceRecord::findOrFail($id);
 
@@ -72,16 +96,14 @@ class AttendanceController extends Controller
 
             $record->breakTimes()->delete();
 
-            foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-                if (empty($breakIn)) {
-                    continue;
-                }
-
-                $record->breakTimes()->create([
-                    'break_start' => $breakIn,
-                    'break_end' => $request->input("new_break_out.{$index}"),
-                ]);
-            }
+            $record->breakTimes()->createMany(
+                collect($request->input('new_break_in', []))
+                    ->filter()
+                    ->map(fn ($breakIn, $index) => [
+                        'break_start' => $breakIn,
+                        'break_end' => $request->input("new_break_out.{$index}"),
+                    ])
+            );
         });
 
         return redirect('/admin/attendance/list?date=' . $record->date->format('Y-m-d'));

@@ -46,17 +46,23 @@ class User extends Authenticatable
         'admin_status' => 'boolean',
     ];
 
+    /** ユーザーの勤怠 */
     public function attendanceRecords(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    /** ユーザーの修正申請 */
     public function attendanceCorrectRequests(): HasMany
     {
         return $this->hasMany(AttendanceCorrectRequest::class);
     }
 
-    //今日の勤怠レコードを返す
+    /**
+     * 今日の勤怠を返す
+     *
+     * @return AttendanceRecord|null 今日の勤怠。まだ出勤していなければ null
+     */
     public function todayAttendance(): ?AttendanceRecord
     {
         return $this->attendanceRecords()
@@ -64,6 +70,15 @@ class User extends Authenticatable
             ->first();
     }
 
+    /**
+     * 今日の勤怠ステータスを返す（$user->attendance_status で使う）
+     *
+     * 次の順で判定する。
+     * 今日の勤怠がない → 勤務外 / 退勤している → 退勤済 /
+     * 終わっていない休憩がある → 休憩中 / それ以外 → 出勤中
+     *
+     * @return string 勤務外・出勤中・休憩中・退勤済のいずれか
+     */
     public function getAttendanceStatusAttribute(): string
     {
         $attendance = $this->todayAttendance();
@@ -78,8 +93,8 @@ class User extends Authenticatable
             return '退勤済';
         }
 
-        //終了時刻がからの休憩がある
-        if ($attendance->breakTimes()->whereNull('break_end')->exists()){
+        //終了時刻が空の休憩がある
+        if ($attendance->breakTimes()->whereNull('break_end')->exists()) {
             return '休憩中';
         }
 
@@ -87,7 +102,14 @@ class User extends Authenticatable
         return '出勤中';
     }
 
-    //指定した月の勤怠一覧（1日ずつの配列）
+    /**
+     * 指定した月の勤怠を、1日ずつの表示用データにして返す
+     *
+     * 打刻のない日も、空の行として含める（その日の id には日付 Y-m-d が入る）。
+     *
+     * @param Carbon $month 表示する月（その月の1日）
+     * @return array<int, array{id: int|string, date: string, clock_in: string, clock_out: string, total_break_time: ?string, total_time: ?string}>
+     */
     public function monthlyAttendanceRecords(Carbon $month): array
     {
         $records = $this->attendanceRecords()

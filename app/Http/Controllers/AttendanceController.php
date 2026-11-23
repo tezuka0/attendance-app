@@ -12,7 +12,11 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-    //勤怠登録画面を表示する
+    /**
+     * 勤怠登録画面を表示する
+     *
+     * @return View 今日の日付・現在時刻・ログインユーザーを渡した勤怠登録画面
+     */
     public function index(): View
     {
         $user = Auth::user();
@@ -24,7 +28,14 @@ class AttendanceController extends Controller
         return view('user.attendance-register', compact('user', 'formattedDate', 'formattedTime'));
     }
 
-    //打刻する
+    /**
+     * 打刻する（出勤・休憩入・休憩戻・退勤）
+     *
+     * 押されたボタンと今のステータスの組み合わせが正しいときだけ記録する。
+     *
+     * @param Request $request action に clock_in / break_in / break_out / clock_out のいずれかが入る
+     * @return RedirectResponse 勤怠登録画面へのリダイレクト
+     */
     public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
@@ -38,18 +49,18 @@ class AttendanceController extends Controller
                 'date' => today(),
                 'clock_in' => $time,
             ]);
-        }elseif ($action === 'break_in' && $status === '出勤中') {
+        } elseif ($action === 'break_in' && $status === '出勤中') {
             //休憩入り
             $user->todayAttendance()->breakTimes()->create([
                 'break_start' => $time,
             ]);
-        }elseif ($action ==='break_out' && $status === '休憩中') {
+        } elseif ($action === 'break_out' && $status === '休憩中') {
             //休憩戻り
             $user->todayAttendance()->breakTimes()
-            ->whereNull('break_end')
-            ->first()
-            ->update(['break_end' => $time]);
-        }elseif ($action === 'clock_out' && $status ==='出勤中') {
+                ->whereNull('break_end')
+                ->first()
+                ->update(['break_end' => $time]);
+        } elseif ($action === 'clock_out' && $status === '出勤中') {
             //退勤
             $user->todayAttendance()->update([
                 'clock_out' => $time,
@@ -60,12 +71,17 @@ class AttendanceController extends Controller
         return redirect('/attendance');
     }
 
-    //勤怠一覧を表示する
+    /**
+     * ログインユーザーの勤怠一覧（月単位）を表示する
+     *
+     * @param Request $request date に表示する月（Y-m）が入る。なければ今月
+     * @return View 1か月分の勤怠と、前月・翌月のリンク用の値を渡した勤怠一覧画面
+     */
     public function list(Request $request): View
     {
         $user = Auth::user();
 
-        $date = Carbon::parse($request->query('date',now()))->startOfMonth();
+        $date = Carbon::parse($request->query('date', now()))->startOfMonth();
 
         $previousMonth = $date->copy()->subMonth()->format('Y-m');
         $nextMonth = $date->copy()->addMonth()->format('Y-m');
@@ -75,7 +91,15 @@ class AttendanceController extends Controller
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
 
-    //「詳細」リンクから勤怠詳細へ移動する
+    /**
+     * 一覧の「詳細」リンクから、勤怠詳細画面へリダイレクトする
+     *
+     * 管理者は管理者用の勤怠詳細へ、一般ユーザーは一般ユーザー用の勤怠詳細へ移動する。
+     *
+     * @param Request $request 管理者のときは user_id（スタッフの id）が入ることがある
+     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @return RedirectResponse 勤怠詳細画面へのリダイレクト
+     */
     public function redirectToDetail(Request $request, string $id): RedirectResponse
     {
         $user = Auth::user();
@@ -94,7 +118,14 @@ class AttendanceController extends Controller
         return redirect("/attendance/detail/{$id}");
     }
 
-    //勤怠詳細を表示する
+    /**
+     * ログインユーザーの勤怠詳細を表示する
+     *
+     * 承認待ちの修正申請があるときは、申請の内容を表示する。
+     *
+     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @return View 勤怠詳細画面
+     */
     public function show(string $id): View
     {
         $user = Auth::user();

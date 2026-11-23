@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 
 class AttendanceRecord extends Model
@@ -22,17 +24,17 @@ class AttendanceRecord extends Model
         'date' => 'date',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function breakTimes()
+    public function breakTimes(): HasMany
     {
         return $this->hasMany(BreakTime::class);
     }
 
-    public function attendanceCorrectRequests()
+    public function attendanceCorrectRequests(): HasMany
     {
         return $this->hasMany(AttendanceCorrectRequest::class);
     }
@@ -42,9 +44,7 @@ class AttendanceRecord extends Model
     {
         return $this->breakTimes
             ->filter(fn($break) => !is_null($break->break_end))
-
             ->sum(fn($break) => Carbon::parse($break->break_start)->diffInMinutes(Carbon::parse($break->break_end)));
-
     }
 
     public function getTotalBreakTimeAttribute(): string

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendanceCorrectRequestBreak extends Model
 {
@@ -15,17 +16,17 @@ class AttendanceCorrectRequestBreak extends Model
         'break_end',
     ];
 
-    public function attendanceCorrectRequest()
+    public function attendanceCorrectRequest(): BelongsTo
     {
         return $this->belongsTo(AttendanceCorrectRequest::class);
     }
 
-    public function getBreakInAttribute()
+    public function getBreakInAttribute(): string
     {
         return $this->break_start;
     }
 
-    public function getBreakOutAttribute()
+    public function getBreakOutAttribute(): ?string
     {
         return $this->break_end;
     }

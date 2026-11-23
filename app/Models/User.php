@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
 
@@ -46,25 +46,25 @@ class User extends Authenticatable
         'admin_status' => 'boolean',
     ];
 
-    public function attendanceRecords()
+    public function attendanceRecords(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);
     }
 
-    public function attendanceCorrectRequests()
+    public function attendanceCorrectRequests(): HasMany
     {
         return $this->hasMany(AttendanceCorrectRequest::class);
     }
 
     //今日の勤怠レコードを返す
-    public function todayAttendance()
+    public function todayAttendance(): ?AttendanceRecord
     {
         return $this->attendanceRecords()
             ->whereDate('date', today())
             ->first();
     }
 
-    public function getAttendanceStatusAttribute()
+    public function getAttendanceStatusAttribute(): string
     {
         $attendance = $this->todayAttendance();
 

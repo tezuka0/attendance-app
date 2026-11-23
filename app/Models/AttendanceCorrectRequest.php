@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 
 class AttendanceCorrectRequest extends Model
@@ -27,12 +29,12 @@ class AttendanceCorrectRequest extends Model
         'date' => 'date',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function attendanceRecord()
+    public function attendanceRecord(): BelongsTo
     {
         return $this->belongsTo(AttendanceRecord::class)
             ->withDefault(function ($attendanceRecord, $application) {
@@ -40,7 +42,7 @@ class AttendanceCorrectRequest extends Model
             });
     }
 
-    public function proposalBreaks()
+    public function proposalBreaks(): HasMany
     {
         return $this->hasMany(AttendanceCorrectRequestBreak::class);
     }
@@ -52,25 +54,25 @@ class AttendanceCorrectRequest extends Model
     }
 
     //申請日時
-    public function getApplicationDateAttribute()
+    public function getApplicationDateAttribute(): Carbon
     {
         return $this->created_at;
     }
 
     //申請後の日
-    public function getNewDateAttribute()
+    public function getNewDateAttribute(): Carbon
     {
         return $this->date;
     }
 
     //申請後の出勤時間
-    public function getNewClockInAttribute()
+    public function getNewClockInAttribute(): string
     {
         return Carbon::parse($this->clock_in)->format('H:i');
     }
 
     //申請後の退勤時間
-    public function getNewClockOutAttribute()
+    public function getNewClockOutAttribute(): string
     {
         return Carbon::parse($this->clock_out)->format('H:i');
     }

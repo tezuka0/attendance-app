@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('attendance_correct_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('attendance_record_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('attendance_record_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->time('clock_in');
             $table->time('clock_out');

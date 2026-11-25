@@ -28,6 +28,7 @@ class AttendanceController extends Controller
         $nextDay = $date->copy()->addDay()->format('Y-m-d');
 
         $users = User::all();
+
         $attendanceRecords = AttendanceRecord::with('breakTimes')->whereDate('date', $date)->get();
 
         return view('admin.admin-attendance-list', compact('date', 'previousDay', 'nextDay', 'users', 'attendanceRecords'));

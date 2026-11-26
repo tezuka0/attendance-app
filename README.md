@@ -11,7 +11,7 @@ coachtech 模擬案件の勤怠管理アプリです。一般ユーザーは出�
 1. リポジトリをクローンする
 
     ```bash
-    git clone git@github.com:tezuka0/attendance-app.git
+    git clone https://github.com/tezuka0/attendance-app.git
     cd attendance-app
     ```
 

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\AttendanceRecord;
 use App\Models\BreakTime;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,7 +12,7 @@ class AttendanceStatusTest extends TestCase
 {
     use RefreshDatabase;
 
-    //勤務外の場合、勤怠ステータスが正しく表示される
+    // 勤務外の場合、勤怠ステータスが正しく表示される
     public function test_status_is_off_duty(): void
     {
         $this->travelTo(now()->setTime(9, 0));
@@ -25,7 +25,7 @@ class AttendanceStatusTest extends TestCase
         $response->assertSee('勤務外');
     }
 
-    //出勤中の場合、勤怠ステータスが正しく表示される
+    // 出勤中の場合、勤怠ステータスが正しく表示される
     public function test_status_is_working(): void
     {
         $this->travelTo(now()->setTime(9, 0));
@@ -44,7 +44,7 @@ class AttendanceStatusTest extends TestCase
         $response->assertSee('出勤中');
     }
 
-    //休憩中の場合、勤怠ステータスが正しく表示される
+    // 休憩中の場合、勤怠ステータスが正しく表示される
     public function test_status_is_on_break(): void
     {
         $this->travelTo(now()->setTime(9, 0));
@@ -68,7 +68,7 @@ class AttendanceStatusTest extends TestCase
         $response->assertSee('休憩中');
     }
 
-    //退勤済の場合、勤怠ステータスが正しく表示される
+    // 退勤済の場合、勤怠ステータスが正しく表示される
     public function test_status_is_clocked_out(): void
     {
         $this->travelTo(now()->setTime(19, 0));

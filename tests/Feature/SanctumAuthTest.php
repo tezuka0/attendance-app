@@ -8,12 +8,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-//Sanctum 認証
+// Sanctum 認証
 class SanctumAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    //未認証時に書き込み系 API で 401 が返る
+    // 未認証時に書き込み系 API で 401 が返る
     public function test_unauthenticated_write_requests_return_401(): void
     {
         $attendanceRecord = AttendanceRecord::factory()->create();
@@ -35,7 +35,7 @@ class SanctumAuthTest extends TestCase
         }
     }
 
-    //認証済みユーザーは自分の勤怠を更新・削除できる
+    // 認証済みユーザーは自分の勤怠を更新・削除できる
     public function test_user_can_update_and_delete_own_attendance_record(): void
     {
         $user = User::factory()->create();
@@ -59,7 +59,7 @@ class SanctumAuthTest extends TestCase
         ]);
     }
 
-    //他ユーザーの勤怠を更新・削除しようとすると 403 が返る
+    // 他ユーザーの勤怠を更新・削除しようとすると 403 が返る
     public function test_user_cannot_update_or_delete_other_users_attendance_record(): void
     {
         $user = User::factory()->create();

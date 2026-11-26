@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,7 +11,7 @@ class ClockOutTest extends TestCase
 {
     use RefreshDatabase;
 
-    //退勤ボタンが正しく機能する
+    // 退勤ボタンが正しく機能する
     public function test_clock_out_button_works(): void
     {
         $this->travelTo(now()->setTime(18, 0));
@@ -29,7 +29,7 @@ class ClockOutTest extends TestCase
         $afterResponse->assertSee('退勤済');
     }
 
-    //退勤時刻が勤怠一覧画面で確認できる
+    // 退勤時刻が勤怠一覧画面で確認できる
     public function test_clock_out_is_shown_on_attendance_list(): void
     {
         $this->travelTo(now()->setTime(9, 0));
@@ -46,7 +46,7 @@ class ClockOutTest extends TestCase
         $response->assertSee('18:00');
     }
 
-    //ステータスが勤務中のユーザーを作成
+    // ステータスが勤務中のユーザーを作成
     private function createWorkingUser(): User
     {
         $user = User::factory()->create();

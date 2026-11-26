@@ -2,30 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    // 勤怠ステータス
+    const STATUS_OFF_DUTY = '勤務外';
+
+    const STATUS_WORKING = '出勤中';
+
+    const STATUS_ON_BREAK = '休憩中';
+
+    const STATUS_CLOCKED_OUT = '退勤済';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -84,23 +93,23 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $attendance = $this->todayAttendance();
 
-        //今日の勤怠レコードがない
-        if (!$attendance) {
-            return '勤務外';
+        // 今日の勤怠レコードがない
+        if (! $attendance) {
+            return self::STATUS_OFF_DUTY;
         }
 
-        //退勤時間が入っている
+        // 退勤時間が入っている
         if ($attendance->clock_out) {
-            return '退勤済';
+            return self::STATUS_CLOCKED_OUT;
         }
 
-        //終了時刻が空の休憩がある
+        // 終了時刻が空の休憩がある
         if ($attendance->breakTimes()->whereNull('break_end')->exists()) {
-            return '休憩中';
+            return self::STATUS_ON_BREAK;
         }
 
-        //上記以外
-        return '出勤中';
+        // 上記以外
+        return self::STATUS_WORKING;
     }
 
     /**
@@ -108,7 +117,7 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * 打刻のない日も、空の行として含める（その日の id には日付 Y-m-d が入る）。
      *
-     * @param Carbon $month 表示する月（その月の1日）
+     * @param  Carbon  $month  表示する月（その月の1日）
      * @return array<int, array{id: int|string, date: string, clock_in: string, clock_out: string, total_break_time: ?string, total_time: ?string}>
      */
     public function monthlyAttendanceRecords(Carbon $month): array
@@ -117,7 +126,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->with('breakTimes')
             ->whereBetween('date', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
             ->get()
-            ->keyBy(fn($record) => $record->date->format('Y-m-d'));
+            ->keyBy(fn ($record) => $record->date->format('Y-m-d'));
 
         $days = CarbonPeriod::create($month->copy()->startOfMonth(), $month->copy()->endOfMonth());
 

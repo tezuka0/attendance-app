@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -13,12 +14,12 @@ return new class extends Migration {
         Schema::create('attendance_correct_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('attendance_record_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('attendance_record_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->time('clock_in');
             $table->time('clock_out');
             $table->string('comment');
-            $table->tinyInteger('status')->default(0); //0: 承認待ち 1: 承認済み
+            $table->tinyInteger('status')->default(0); // 0: 承認待ち 1: 承認済み
             $table->timestamps();
         });
     }

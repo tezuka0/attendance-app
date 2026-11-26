@@ -9,12 +9,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-//公開API 読み取り系
+// 公開API 読み取り系
 class PublicApiReadTest extends TestCase
 {
     use RefreshDatabase;
 
-    //GET /api/v1/attendance-records で勤怠一覧が JSON で取得できる
+    // GET /api/v1/attendance-records で勤怠一覧が JSON で取得できる
     public function test_attendance_records_can_be_listed_as_json(): void
     {
         $this->seed();
@@ -29,7 +29,7 @@ class PublicApiReadTest extends TestCase
         $response->assertJsonPath('meta.total', AttendanceRecord::count());
     }
 
-    //GET /api/v1/attendance-records/{attendanceRecord} で勤怠詳細が JSON で取得できる
+    // GET /api/v1/attendance-records/{attendanceRecord} で勤怠詳細が JSON で取得できる
     public function test_attendance_record_detail_can_be_shown_as_json(): void
     {
         $user = User::factory()->create();
@@ -67,7 +67,7 @@ class PublicApiReadTest extends TestCase
         $response->assertJsonPath('data.applications.0.comment', '電車遅延のため');
     }
 
-    //存在しない ID では 404 とエラー JSON が返る
+    // 存在しない ID では 404 とエラー JSON が返る
     public function test_not_found_error_is_returned_for_unknown_id(): void
     {
         $response = $this->getJson('/api/v1/attendance-records/99999');

@@ -15,9 +15,9 @@ use Illuminate\View\View;
 class AttendanceController extends Controller
 {
     /**
-     * 全一般ユーザーの勤怠一覧（日単位）を表示する
+     * 全ユーザーの勤怠一覧（日単位）を表示する
      *
-     * @param Request $request date に表示する日（Y-m-d）が入る。なければ今日
+     * @param  Request  $request  date に表示する日（Y-m-d）が入る。なければ今日
      * @return View その日の勤怠と、前日・翌日のリンク用の値を渡した勤怠一覧画面
      */
     public function index(Request $request): View
@@ -27,7 +27,7 @@ class AttendanceController extends Controller
         $previousDay = $date->copy()->subDay()->format('Y-m-d');
         $nextDay = $date->copy()->addDay()->format('Y-m-d');
 
-        $users = User::where('admin_status', false)->get();
+        $users = User::all();
 
         $attendanceRecords = AttendanceRecord::with('breakTimes')->whereDate('date', $date)->get();
 
@@ -39,8 +39,8 @@ class AttendanceController extends Controller
      *
      * $id が日付のときは、クエリの user_id でどのスタッフの勤怠かを決める。
      *
-     * @param Request $request 打刻のない日を開くときは user_id（スタッフの id）が入る
-     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @param  Request  $request  打刻のない日を開くときは user_id（スタッフの id）が入る
+     * @param  string  $id  勤怠の id、または打刻のない日の日付（Y-m-d）
      * @return View 勤怠詳細画面
      */
     public function show(Request $request, string $id): View
@@ -58,8 +58,8 @@ class AttendanceController extends Controller
         $breaks = $record ? $record->breakTimes : collect();
 
         $attendanceRecord = [
-            'id' => $record ? $record->id : $date->format('Y-m-d'),
-            'year' => $date->format('Y') . '年',
+            'id' => $record ? $record->id : $date->format('Y-m-d').'?user_id='.$user->id,
+            'year' => $date->format('Y').'年',
             'date' => $date->format('n月j日'),
             'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
             'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
@@ -77,22 +77,33 @@ class AttendanceController extends Controller
      * 管理者が勤怠を直接修正する
      *
      * 申請を作らずに勤怠を更新する。休憩は、送られた内容ですべて作り直す。
+     * 打刻のない日も修正できるよう、その日の勤怠がなければ新しく作って保存する。
      * 一般ユーザー用の AttendanceCorrectRequestController::store から呼ばれる。
      *
-     * @param AttendanceCorrectRequestRequest $request 修正後の出勤・退勤・休憩・備考（バリデーション済み）
-     * @param string $id 勤怠の id
+     * @param  AttendanceCorrectRequestRequest  $request  修正後の出勤・退勤・休憩・備考（バリデーション済み）。打刻のない日は user_id も入る
+     * @param  string  $id  勤怠の id、または打刻のない日の日付（Y-m-d）
      * @return RedirectResponse 修正した日の勤怠一覧へのリダイレクト
      */
     public function update(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
     {
-        $record = AttendanceRecord::findOrFail($id);
+        if (ctype_digit($id)) {
+            $record = AttendanceRecord::findOrFail($id);
+        } else {
+            $user = User::where('admin_status', false)->findOrFail($request->query('user_id'));
+
+            // その日の勤怠があれば取得し、なければ保存前の新しい勤怠を用意する
+            $record = $user->attendanceRecords()->firstOrNew([
+                'date' => Carbon::parse($id)->toDateString(),
+            ]);
+        }
 
         DB::transaction(function () use ($record, $request) {
-            $record->update([
+            $record->fill([
                 'clock_in' => $request->input('new_clock_in'),
                 'clock_out' => $request->input('new_clock_out'),
                 'comment' => $request->input('comment'),
             ]);
+            $record->save();
 
             $record->breakTimes()->delete();
 
@@ -106,6 +117,6 @@ class AttendanceController extends Controller
             );
         });
 
-        return redirect('/admin/attendance/list?date=' . $record->date->format('Y-m-d'));
+        return redirect('/admin/attendance/list?date='.$record->date->format('Y-m-d'));
     }
 }

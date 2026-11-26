@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectRequestController;
-use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
-use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\AttendanceReportController;
+use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,16 +33,16 @@ Route::post('admin/login', [AuthenticatedSessionController::class, 'store'])
     ->name('admin.login.store');
 
 Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])
-     ->middleware('auth')
-     ->name('admin.logout');
+    ->middleware('auth')
+    ->name('admin.logout');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    //一般ユーザーの画面
+    // 一般ユーザーの画面
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance', [AttendanceController::class, 'store']);
     Route::get('/attendance/list', [AttendanceController::class, 'list']);
-    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])->where('id','[0-9]+|\d{4}-\d{2}-\d{2}');
-    Route::post('/attendance/detail/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id','[0-9]+|\d{4}-\d{2}-\d{2}');
+    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
+    Route::post('/attendance/detail/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::get('/attendance/{id}', [AttendanceController::class, 'redirectToDetail'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::post('/attendance/{id}', [AttendanceCorrectRequestController::class, 'store'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::get('/application/{id}', [AttendanceCorrectRequestController::class, 'redirectToDetail'])->where('id', '[0-9]+');
@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    //管理者の画面
+    // 管理者の画面
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index']);
     Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->where('id', '[0-9]+|\d{4}-\d{2}-\d{2}');
     Route::get('/admin/staff/list', [StaffController::class, 'index']);

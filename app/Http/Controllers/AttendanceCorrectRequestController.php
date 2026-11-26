@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\AttendanceCorrectRequestController as AdminAttendanceCorrectRequestController;
+use App\Http\Requests\AttendanceCorrectRequestRequest;
 use App\Models\AttendanceCorrectRequest;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Carbon\Carbon;
 
 class AttendanceCorrectRequestController extends Controller
 {
@@ -18,7 +18,7 @@ class AttendanceCorrectRequestController extends Controller
      *
      * 自分の申請だけを探す。他人の申請や存在しない id のときは 404 になる。
      *
-     * @param string $id 修正申請の id
+     * @param  string  $id  修正申請の id
      * @return RedirectResponse 勤怠詳細画面へのリダイレクト（勤怠がない日の申請は日付で移動する）
      */
     public function redirectToDetail(string $id): RedirectResponse
@@ -39,8 +39,8 @@ class AttendanceCorrectRequestController extends Controller
      * 管理者のときは、申請を作らずに勤怠を直接修正する処理に任せる。
      * 同じ日に承認待ちの申請がすでにあるときは、新しく作らない。
      *
-     * @param AttendanceCorrectRequestRequest $request 修正後の出勤・退勤・休憩・備考（バリデーション済み）
-     * @param string $id 勤怠の id、または打刻のない日の日付（Y-m-d）
+     * @param  AttendanceCorrectRequestRequest  $request  修正後の出勤・退勤・休憩・備考（バリデーション済み）
+     * @param  string  $id  勤怠の id、または打刻のない日の日付（Y-m-d）
      * @return RedirectResponse 申請一覧画面へのリダイレクト（管理者のときは勤怠一覧へ）
      */
     public function store(AttendanceCorrectRequestRequest $request, string $id): RedirectResponse
@@ -59,11 +59,11 @@ class AttendanceCorrectRequestController extends Controller
             $record = $user->attendanceRecords()->whereDate('date', $date)->first();
         }
 
-        $exists = $user->attendanceCorrectRequests()
+        $pendingRequestExists = $user->attendanceCorrectRequests()
             ->whereDate('date', $date)
             ->where('status', AttendanceCorrectRequest::STATUS_PENDING)
             ->exists();
-        if ($exists) {
+        if ($pendingRequestExists) {
             return redirect('/stamp_correction_request/list');
         }
 

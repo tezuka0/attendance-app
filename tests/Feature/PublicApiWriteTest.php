@@ -8,12 +8,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-//公開API 書き込み系
+// 公開API 書き込み系
 class PublicApiWriteTest extends TestCase
 {
     use RefreshDatabase;
 
-    //POST /api/v1/attendance-records で勤怠が作成される
+    // POST /api/v1/attendance-records で勤怠が作成される
     public function test_attendance_record_can_be_created(): void
     {
         $user = User::factory()->create();
@@ -36,7 +36,7 @@ class PublicApiWriteTest extends TestCase
         ]);
     }
 
-    //バリデーションエラー時に 422 と日本語エラーメッセージが返る
+    // バリデーションエラー時に 422 と日本語エラーメッセージが返る
     public function test_validation_error_returns_japanese_messages(): void
     {
         Sanctum::actingAs(User::factory()->create());
@@ -51,7 +51,7 @@ class PublicApiWriteTest extends TestCase
         $this->assertDatabaseCount('attendance_records', 0);
     }
 
-    //PUT /api/v1/attendance-records/{attendanceRecord} で勤怠が更新される
+    // PUT /api/v1/attendance-records/{attendanceRecord} で勤怠が更新される
     public function test_attendance_record_can_be_updated(): void
     {
         $user = User::factory()->create();
@@ -82,7 +82,7 @@ class PublicApiWriteTest extends TestCase
         ])->assertStatus(404);
     }
 
-    //DELETE /api/v1/attendance-records/{attendanceRecord} で勤怠が削除される
+    // DELETE /api/v1/attendance-records/{attendanceRecord} で勤怠が削除される
     public function test_attendance_record_can_be_deleted(): void
     {
         $user = User::factory()->create();

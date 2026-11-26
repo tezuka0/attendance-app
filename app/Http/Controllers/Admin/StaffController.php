@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StaffController extends Controller
@@ -35,8 +35,8 @@ class StaffController extends Controller
      *
      * 打刻のない日の詳細リンクには、どのスタッフの勤怠かがわかるよう user_id を付ける。
      *
-     * @param Request $request date に表示する月（Y-m）が入る。なければ今月
-     * @param string $id スタッフ（一般ユーザー）の id
+     * @param  Request  $request  date に表示する月（Y-m）が入る。なければ今月
+     * @param  string  $id  スタッフ（一般ユーザー）の id
      * @return View 1か月分の勤怠と、前月・翌月のリンク用の値を渡したスタッフ別勤怠一覧画面
      */
     public function show(Request $request, string $id): View
@@ -57,7 +57,7 @@ class StaffController extends Controller
                     return $attendanceRecord;
                 }
 
-                $attendanceRecord['id'] .= '?user_id=' . $user->id;
+                $attendanceRecord['id'] .= '?user_id='.$user->id;
 
                 return $attendanceRecord;
             })
@@ -71,7 +71,7 @@ class StaffController extends Controller
      *
      * Excel で開いても文字化けしないよう、先頭に BOM を付ける。
      *
-     * @param Request $request user_id にスタッフの id、year_month に出力する月（Y-m）が入る
+     * @param  Request  $request  user_id にスタッフの id、year_month に出力する月（Y-m）が入る
      * @return StreamedResponse 勤怠一覧の CSV ファイル
      */
     public function export(Request $request): StreamedResponse
@@ -86,7 +86,7 @@ class StaffController extends Controller
 
         $attendanceRecords = $user->monthlyAttendanceRecords($month);
 
-        $fileName = $user->name . '_' . $month->format('Y-m') . '_勤怠.csv';
+        $fileName = $user->name.'_'.$month->format('Y-m').'_勤怠.csv';
 
         return response()->streamDownload(function () use ($attendanceRecords) {
             $stream = fopen('php://output', 'w');
